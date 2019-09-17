@@ -3,7 +3,6 @@ import * as moment from 'moment';
 import UserStep from './UserStep'
 
 const userId = 1;
-const startOfChallenge = moment().set({'year': 2019, 'month': 8, 'date': 16});
 
 async function loadUserSteps(id) {
   const response = await fetch('/graphql', {
@@ -17,48 +16,38 @@ async function loadUserSteps(id) {
   return responseBody.user;
 }
 
-// TODO: this
-var getStepCount = (steps, week, day) => {
-  var result = 0;
-  if(steps.length > 0){
-    for(var i = 0; i < steps.length; i++){
-      if(steps[i].week === week && steps[i].day === day){
-        result = steps[i].stepCount
-      }
-    }
-  }
-  return result;
-}
-
 var createTable = (steps) => {
-  console.log("create table")
   let table = [];
-  let weeks = 5; //challenge is for 5 weeks
   let days = ["Week", "Mon", "Tues", "Weds", "Thurs", "Fri", "Sat", "Sun"];
   let header = [];
   for (let i = 0; i < days.length; i++) {
-    header.push(<td key={days[i]}>{`${days[i]}`}</td>)
+    header.push(<td key={'header' + days[i]}>{`${days[i]}`}</td>)
   }
   table.push(<tr key={'header'}>{header}</tr>)
-  var week = moment(startOfChallenge);
-  for (let j = 1; j <= weeks; j++) {
-    let children = []
-    children.push(<td key={'week-' +days[j]}>{`${j}`}</td>)
-    for (let i = 0; i < ( days.length - 1); i++) {
-      var anySteps = getStepCount(steps, j, i+1)
-      var data = {
-        count : anySteps,
-        userId : userId,
-        date : moment(week).add(i, 'days'),
-      }
-      children.push(<td key={days[i]}>
-      <UserStep data={data}/>
-      </td>)
+  var week = 1;
+  let children = []
+  for (let i = 0; i < ( steps.length ); i++) {
+    if(children.length === 0){
+      var key = 'week_' + days[week] + '_' + i;
+      children.push(<td key={key}>{week}</td>)
     }
-    week.add(1, 'week')
-    table.push(<tr key={'col' +j}>{children}</tr>)
+    var stepCount = steps[i].stepCount;
+    var dateOfSteps = moment(steps[i].dateOfSteps);
+      var data = {
+        count : stepCount,
+        userId : userId,
+        date : dateOfSteps
+      }
+      children.push(<td key={days[i] + '_' + i }>
+        <UserStep data={data}/>
+      </td>)
+    if(children.length === 8){
+      table.push(<tr key={'col_' + i}>{children}</tr>)
+      children = []
+      week = week +1;
+    }
   }
-  return table
+  return table;
 }
 
 class UserSteps extends Component {
@@ -91,8 +80,7 @@ class UserSteps extends Component {
     return (
       <div>
       <div>
-        <h2>{ userName }</h2>
-        <h4>{ teamName }</h4>
+        <h2>{ userName } - { teamName }</h2>
       </div>
         {showTable &&
         <div>

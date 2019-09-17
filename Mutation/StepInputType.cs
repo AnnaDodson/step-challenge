@@ -14,7 +14,7 @@ namespace StepChallenge.Mutation
             //Field(x => x.DateOfSteps);
             Field<NonNullGraphType<IntGraphType>>("stepCount");
             Field<NonNullGraphType<IntGraphType>>("userId");
-            Field<NonNullGraphType<DateTimeOffsetGraphType>>("dateOfSteps").Metadata.Add(nameof(StepValidationRule), null);
+            Field<NonNullGraphType<DateTimeGraphType>>("dateOfSteps").Metadata.Add(nameof(StepValidationRule), null);
             /*
             Field<NonNullGraphType<DateTimeOffsetGraphType>>(x => x.DateOfSteps)
             .Description("Date the steps were taken")

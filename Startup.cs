@@ -29,6 +29,8 @@ namespace StepChallenge
             services.AddSingleton<TeamType>();
             services.AddSingleton<StepsType>();
             services.AddSingleton<StepInputType>();
+            services.AddSingleton<LeaderBoardType>();
+            services.AddSingleton<TeamScoreType>();
             services.AddSingleton<StepChallengeMutation>();
             services.AddSingleton<StepChallengeQuery>();
             var sp = services.BuildServiceProvider();
