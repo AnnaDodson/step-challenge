@@ -21,7 +21,7 @@ namespace StepChallenge.Migrations
                     b.Property<int>("StepsId")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<DateTimeOffset>("DateOfSteps");
+                    b.Property<DateTime>("DateOfSteps");
 
                     b.Property<int>("Day");
 

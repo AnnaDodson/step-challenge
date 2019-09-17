@@ -64,7 +64,7 @@ namespace StepChallenge
         private static List<Steps> GetSteps()
         {
             var week = 1;
-            var monday = new DateTimeOffset(2019, 9, 2, 0, 0, 0, TimeSpan.Zero);
+            var monday = new DateTime(2019, 9, 16, 0, 0, 0);
             var steps = new List<Steps>
             {
                 new Steps{
@@ -97,7 +97,7 @@ namespace StepChallenge
             int GenerateRandomSteps()
             {
                 Random rnd = new Random();
-                return rnd.Next(0, 1500); 
+                return rnd.Next(0, 10); 
             }
             
         }

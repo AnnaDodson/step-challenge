@@ -9,7 +9,7 @@ using StepChallenge;
 namespace StepChallenge.Migrations
 {
     [DbContext(typeof(StepContext))]
-    [Migration("20190915125724_InitialCreate")]
+    [Migration("20190917193153_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -23,7 +23,7 @@ namespace StepChallenge.Migrations
                     b.Property<int>("StepsId")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<DateTimeOffset>("DateOfSteps");
+                    b.Property<DateTime>("DateOfSteps");
 
                     b.Property<int>("Day");
 

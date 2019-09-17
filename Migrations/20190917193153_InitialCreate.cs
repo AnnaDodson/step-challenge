@@ -48,7 +48,7 @@ namespace StepChallenge.Migrations
                     StepsId = table.Column<int>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     StepCount = table.Column<int>(nullable: false),
-                    DateOfSteps = table.Column<DateTimeOffset>(nullable: false),
+                    DateOfSteps = table.Column<DateTime>(nullable: false),
                     Week = table.Column<int>(nullable: false),
                     Day = table.Column<int>(nullable: false),
                     UserId = table.Column<int>(nullable: false)
