@@ -2,12 +2,23 @@ using Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace StepChallenge
 {
     public class DataSeed
     {
-        public static void Run(StepContext db)
+        private readonly UserManager<IdentityUser> _userManager;
+        public DataSeed(
+            UserManager<IdentityUser> userManager
+        )
+        {
+            _userManager = userManager;
+        }
+        
+        public async Task Run(StepContext db)
         {
             if (!db.Team.Any())
             {
@@ -16,20 +27,22 @@ namespace StepChallenge
                     new Team
                     {
                         TeamId = 1,
-                        Name = "TeamOne",
-                        Users = new[]
+                        TeamName = "Team_1",
+                        Participants = new[]
                         {
-                            new User
+                            new Participant
                             {
-                                UserId = 1,
-                                UserName = "Alice",
+                                ParticipantId = 1,
+                                ParticipantName = "Alice",
                                 IsAdmin = true,
+                                IdentityUser = await GetIdentityUser("alice", "password"),
                                 Steps = GetSteps()
                             },
-                            new User
+                            new Participant
                             {
-                                UserId = 2,
-                                UserName = "Bob",
+                                ParticipantId = 2,
+                                ParticipantName = "Bob",
+                                IdentityUser = await GetIdentityUser("bob", "password"),
                                 Steps = GetSteps()
                             }
                         }
@@ -37,31 +50,43 @@ namespace StepChallenge
                     new Team
                     {
                         TeamId = 2,
-                        Name = "TeamTwo",
-                        Users = new[]
+                        TeamName = "Team_2",
+                        Participants = new[]
                         {
-                            new User
+                            new Participant
                             {
-                                UserId = 3,
-                                UserName = "Susan",
+                                ParticipantId = 3,
+                                ParticipantName = "Susan",
+                                IdentityUser = await GetIdentityUser("susan", "password"),
                                 Steps = GetSteps()
                             },
-                            new User
+                            new Participant
                             {
-                                UserId = 4,
-                                UserName = "Helga",
+                                ParticipantId = 4,
+                                ParticipantName = "Helga",
+                                IdentityUser = await GetIdentityUser("helga", "password"),
                                 Steps = GetSteps()
                             }
                         }
                     }
                 };
+                
+                teams.AddRange(GetTeams());
                     
                 db.Team.AddRange(teams);
                 db.SaveChanges();
             }
         }
 
-        private static List<Steps> GetSteps()
+        private Task<IdentityUser> GetIdentityUser(string username, string password)
+        {
+            var user = new IdentityUser {UserName = username};
+            _userManager.CreateAsync(user, password);
+            return Task.FromResult(user);
+        }
+
+
+        private List<Steps> GetSteps()
         {
             var week = 1;
             var monday = new DateTime(2019, 9, 16, 0, 0, 0);
@@ -102,5 +127,18 @@ namespace StepChallenge
             
         }
 
+        private List<Team> GetTeams()
+        {
+            var newTeams = new List<Team>();
+            var numberOfTeams = 8;
+            for (int i = 2; i < numberOfTeams; i++)
+            {
+                newTeams.Add(new Team
+                {
+                    TeamName = "Team_" + (i + 1)
+                });
+            }
+            return newTeams;
+        }
     }
 }

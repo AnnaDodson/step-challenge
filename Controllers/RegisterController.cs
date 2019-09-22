@@ -1,0 +1,99 @@
+using System.Collections.Generic;
+using System.Net.Mime;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Model;
+using StepChallenge.DataModels;
+using StepChallenge.Services;
+
+namespace StepChallenge.Controllers
+{
+    [AllowAnonymous]
+    [Route("api/[controller]")]
+    public class RegisterController : Controller
+    {
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly SignInManager<IdentityUser> _signInManager;
+        //private readonly ILogger<RegisterController> _logger;
+        private readonly UserService _userService;
+        private readonly TeamService _teamService;
+
+        public RegisterController(
+            UserManager<IdentityUser> userManager,
+            SignInManager<IdentityUser> signInManager,
+            //ILogger<RegisterController> logger,
+            UserService userService,
+            TeamService teamService)
+        {
+            _userManager = userManager;
+            _signInManager = signInManager;
+            //_logger = logger;
+            _userService = userService;
+            _teamService = teamService;
+        }
+
+        [HttpPost]
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<Participant>> RegisterUserPostAsync([FromBody] InputModel inputModel)
+        {
+            // check it's a valid team and the user doesn't already exist
+            var teamExists = await _teamService.TeamExists(inputModel.TeamId);
+
+            if (!teamExists)
+            {
+                var err = new Dictionary<string, string>();
+                err.Add("error", "Team does not exist");
+                return new BadRequestObjectResult(err);
+            }
+            
+            var user = new IdentityUser {UserName = inputModel.Username };
+            var result = await _userManager.CreateAsync(user, inputModel.Password);
+            if (result.Succeeded)
+            {
+                //_logger.LogInformation("User created a new account with password.");
+                await _signInManager.SignInAsync(user, isPersistent: false);
+            }
+
+            var errors = "";
+            foreach (var error in result.Errors)
+            {
+                errors = errors + " " + error.Description;
+            }
+
+            if (!string.IsNullOrEmpty(errors))
+            {
+                var err = new Dictionary<string, string>();
+                err.Add("error", errors);
+                return new BadRequestObjectResult(err);
+            }
+
+            var newUser = await _userService.CreateNewParticipant(
+                new Participant
+                {
+                    ParticipantName = user.UserName,
+                    TeamId = inputModel.TeamId,
+                    IdentityUser = user
+                }
+            );
+
+            return newUser;
+        }
+
+        [Route("get_teams")]
+        [HttpGet]
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<List<Team>>> RegisterUserGetTeams()
+        {
+            var teams = await _teamService.GetAllTeams();
+            return teams;
+        }
+    }
+}

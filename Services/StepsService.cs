@@ -19,8 +19,8 @@ namespace StepChallenge.Services
         public StepsService(StepContext stepContext)
         {
             _stepContext = stepContext;
-
         }
+        
         public async Task<Steps> CreateAsync(StepsInputs steps)
         {
             var challengeStartDate = new DateTime(2019,09,16);
@@ -46,12 +46,12 @@ namespace StepChallenge.Services
                 DateOfSteps = stepsDay,
                 StepCount = steps.StepCount,
                 Day = (int)steps.DateOfSteps.DayOfWeek,
-                UserId = steps.UserId,
+                ParticipantId = steps.UserId,
                 Week = weekNo,
             };
 
             var existingStepCount = await _stepContext.Steps
-                .Where(s => s.UserId == steps.UserId)
+                .Where(s => s.ParticipantId == steps.UserId)
                 .Where(s => s.DateOfSteps == stepsDay)
                 .SingleOrDefaultAsync();
 

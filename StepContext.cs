@@ -1,12 +1,14 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Model;
 
 namespace StepChallenge
 {
-    public class StepContext : DbContext
+    public partial class StepContext : IdentityDbContext<IdentityUser >
     {
         public DbSet<Team> Team { get; set; }
-        public DbSet<User> User { get; set; }
+        public DbSet<Participant> Participants { get; set; }
         public DbSet<Steps> Steps { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

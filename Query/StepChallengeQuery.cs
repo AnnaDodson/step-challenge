@@ -18,54 +18,54 @@ namespace StepChallenge.Query
             var startDate = new DateTime(2019,09,16, 0,0,0);
             var endDate = new DateTime(2019, 12, 05,0,0,0);
 
-            Field<UserType>(
-                "User",
+            Field<ParticipantType>(
+                "Participant",
                 arguments: new QueryArguments(
-                    new QueryArgument<IdGraphType> {Name = "id", Description = "The ID of the User"}),
+                    new QueryArgument<IdGraphType> {Name = "participantId", Description = "The ID of the Participant"}),
                 resolve: context =>
                 {
-                    var id = context.GetArgument<int>("id");
-                    var user = db.User
+                    var id = context.GetArgument<int>("participantId");
+                    var participant = db.Participants
                         .Include("Team")
-                        .FirstOrDefault(i => i.UserId == id);
+                        .FirstOrDefault(i => i.ParticipantId == id);
 
                     var steps = db.Steps
-                        .Where(s => s.UserId == id)
+                        .Where(s => s.ParticipantId == id)
                         .Where(s => s.DateOfSteps >= startDate && s.DateOfSteps < endDate)
                         .OrderBy(s => s.DateOfSteps)
                         .ToList();
 
                     var days = stepsService.GetAllWeeksSteps(steps);
 
-                    if (user != null)
+                    if (participant != null)
                     {
-                        user.Steps = days;
+                        participant.Steps = days;
                     }
 
-                    return user;
+                    return participant;
                 });
             
-            Field<ListGraphType<UserType>>(
-                "Users",
+            Field<ListGraphType<ParticipantType>>(
+                "Participants",
                 resolve: context =>
                 {
-                    var users = db.User;
-                    return users;
+                    var participants = db.Participants;
+                    return participants;
                 });
 
             Field<ListGraphType<StepsType>>(
                 "TeamSteps",
                 arguments: new QueryArguments(
-                    new QueryArgument<IdGraphType> {Name = "id", Description = "The ID of the Team"}),
+                    new QueryArgument<IdGraphType> {Name = "teamId", Description = "The ID of the Team"}),
                 resolve: context =>
                 {
-                    var id = context.GetArgument<int>("id");
+                    var id = context.GetArgument<int>("teamId");
                     var team = db.Team
-                        .Include("Users")
+                        .Include("Participants")
                         .FirstOrDefault(i => i.TeamId == id);
 
                     var steps = db.Steps
-                        .Where(s => team.Users.Any(t => t.UserId == s.UserId))
+                        .Where(s => team.Participants.Any(t => t.ParticipantId == s.ParticipantId))
                         .Where(s => s.DateOfSteps >= startDate && s.DateOfSteps < endDate)
                         .ToList();
 
@@ -82,7 +82,7 @@ namespace StepChallenge.Query
                 {
                     var teamId = context.GetArgument<int>("teamId");
                     var team = db.Team
-                        .Include("Users")
+                        .Include("Participants")
                         .FirstOrDefault(t => t.TeamId == teamId);
 
                     return team;
@@ -93,8 +93,8 @@ namespace StepChallenge.Query
                 resolve: context =>
                 {
                     var teams = db.Team
-                        .Include("Users")
-                        .Include("Users.Steps");
+                        .Include("Participants")
+                        .Include("Participants.Steps");
 
                     return teams;
                 });
@@ -109,8 +109,8 @@ namespace StepChallenge.Query
                         .Select(t => new TeamScores
                         {
                             TeamId = t.TeamId,
-                            TeamName = t.Name,
-                            TeamStepCount = t.Users.Sum(u => u.Steps.Sum(s => s.StepCount))
+                            TeamName = t.TeamName,
+                            TeamStepCount = t.Participants.Sum(u => u.Steps.Sum(s => s.StepCount))
                         }).ToList();
 
                     leaderBoard.TeamScores = teamSteps;

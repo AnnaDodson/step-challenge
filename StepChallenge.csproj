@@ -9,19 +9,20 @@
     <Content Include="ClientApp\.env" />
     <Content Include="ClientApp\src\resolver.js" />
     <Content Include="ClientApp\src\schema.graphql" />
+    <Content Include="Pages\Shared\_LoginPartial.cshtml" />
+    <Content Include="Pages\_Login.cshtml" />
+    <Content Include="Pages\_LoginPartial.cshtml" />
     <PackageReference Include="graphiql" Version="1.2.0" />
     <PackageReference Include="graphql" Version="2.4.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.AspNetCore.Session" Version="2.2.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.2.6" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="2.2.6" />
     <Content Remove="$(SpaRoot)**" />
     <None Remove="$(SpaRoot)**" />
     <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Migrations" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.3" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
