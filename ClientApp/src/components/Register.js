@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import Auth from './Auth';
 
 async function getTeams() {
   const response = await fetch('/api/register/get_teams', {
@@ -9,12 +10,13 @@ async function getTeams() {
   return responseBody;
 }
 
-async function registerUser(username, password, team){
+async function registerUser(name, email, password, team){
     const response = await fetch('/api/register', {
      method:'POST',
      headers:{'content-type':'application/json'},
      body:JSON.stringify({
-      username: username,
+      name: name,
+      email: email,
       password: password,
       teamId: parseInt(team, 10)
     })
@@ -44,13 +46,15 @@ export class Register extends Component {
     super(props);
     this.state =  {
         teams : [],
-        username : '',
+        email : '',
+        name : '',
         password : '',
         team : null,
         error : null,
     }
     this.handleChangePassword = this.handleChangePassword.bind(this);
-    this.handleChangeUsername = this.handleChangeUsername.bind(this);
+    this.handleChangeName = this.handleChangeName.bind(this);
+    this.handleChangeEmail = this.handleChangeEmail.bind(this);
     this.handleChangeTeam = this.handleChangeTeam.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     getTeams()
@@ -67,26 +71,34 @@ export class Register extends Component {
             <div>
               <form style={formStyle} onSubmit={this.handleSubmit} key="register">
                 <label>
-                  Username
-                  <input type="text" value={this.state.username} onChange={this.handleChangeUsername} />
+                  Name
                 </label>
+                <br />
+                <input type="text" value={this.state.name} onChange={this.handleChangeName} />
+                <br />
+                <label>
+                  Email
+                </label>
+                <br />
+                  <input type="text" value={this.state.email} onChange={this.handleChangeEmail} />
                 <br />
                 <label>
                   Password
-                  <input type="password" value={this.state.password} onChange={this.handleChangePassword} />
                 </label>
                 <br />
-
+                  <input type="password" value={this.state.password} onChange={this.handleChangePassword} />
+                <br />
                 <label>
                   Team
-                  <select value={this.state.team} onChange={this.handleChangeTeam}>
-                    <option value="null "></option>
+                </label>
+                <br />
+                  <select key={teams} value={this.state.team} onChange={this.handleChangeTeam}>
                     {teams.map(team =>
-                      <option value={team.teamId}>{ team.name }</option>
+                      <option key={team.teamId} value={team.teamId}>{ team.teamName }</option>
                     )}
                   </select>
-                </label>
 
+                <br />
                 <br />
                 <input type="submit" data-date="test" value="Submit" />
               </form>
@@ -103,9 +115,14 @@ export class Register extends Component {
     this.setState({password: event.target.value});
   }
 
-  handleChangeUsername(event) {
+  handleChangeEmail(event) {
     this.setState({error: null});
-    this.setState({username: event.target.value});
+    this.setState({email: event.target.value});
+  }
+
+  handleChangeName(event) {
+    this.setState({error: null});
+    this.setState({name: event.target.value});
   }
 
   handleChangeTeam(event) {
@@ -116,9 +133,15 @@ export class Register extends Component {
   handleSubmit(event) {
     var self = this;
     event.preventDefault();
-    registerUser(this.state.username, this.state.password, this.state.team).then(function(res){
+    registerUser(this.state.name, this.state.email, this.state.password, this.state.team).then(function(res){
         if(res.error){
             self.setState({error: res.error});
+        }
+        else{
+          console.log("registered")
+          var auth = new Auth();
+          auth.createLoggedInCookie()
+          self.props.history.push('/')
         }
     })
   }

@@ -25,7 +25,6 @@ async function userLogin(username, password) {
 export class Login extends Component {
   static displayName = Login.name;
   constructor(props) {
-    debugger;
     super(props);
     this.state =  {
         username : '',
@@ -45,15 +44,19 @@ export class Login extends Component {
               <form style={formStyle} onSubmit={this.handleSubmit} key="login">
                 <label>
                   Username
-                  <input type="text" value={this.state.username} onChange={this.handleChangeUsername} />
                 </label>
+                <br />
+                  <input type="text" value={this.state.username} onChange={this.handleChangeUsername} />
                 <br />
                 <label>
                   Password
-                  <input type="password" value={this.state.password} onChange={this.handleChangePassword} />
                 </label>
                 <br />
+                  <input type="password" value={this.state.password} onChange={this.handleChangePassword} />
+                <br />
+                <br />
                 <input type="submit" data-date="test" value="Submit" />
+                <br />
               </form>
               {this.state.error &&
                 <p style={errorStyle}>{this.state.error}</p>
@@ -77,9 +80,10 @@ export class Login extends Component {
     var self = this;
     event.preventDefault();
     userLogin(this.state.username, this.state.password)
-      .then(function(response){
-        if(response.error){
-          self.setState({error: response.error});
+      .then(function(error){
+        debugger;
+        if(error){
+          self.setState({error: error.error ? error.error : "Something went wrong"});
         }
         else{
           self.props.history.push('/')

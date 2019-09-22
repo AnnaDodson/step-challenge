@@ -40,7 +40,7 @@ namespace StepChallenge.Controllers
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<Participant>> RegisterUserPostAsync([FromBody] InputModel inputModel)
+        public async Task<ActionResult> RegisterUserPostAsync([FromBody] InputModel inputModel)
         {
             // check it's a valid team and the user doesn't already exist
             var teamExists = await _teamService.TeamExists(inputModel.TeamId);
@@ -52,7 +52,7 @@ namespace StepChallenge.Controllers
                 return new BadRequestObjectResult(err);
             }
             
-            var user = new IdentityUser {UserName = inputModel.Username };
+            var user = new IdentityUser {UserName = inputModel.Email, Email = inputModel.Email};
             var result = await _userManager.CreateAsync(user, inputModel.Password);
             if (result.Succeeded)
             {
@@ -76,13 +76,15 @@ namespace StepChallenge.Controllers
             var newUser = await _userService.CreateNewParticipant(
                 new Participant
                 {
-                    ParticipantName = user.UserName,
+                    ParticipantName = inputModel.Name,
                     TeamId = inputModel.TeamId,
                     IdentityUser = user
                 }
             );
 
-            return newUser;
+             var response = new Dictionary<string, string>()
+                 {{"name", newUser.ParticipantName }};
+             return new OkObjectResult(response);
         }
 
         [Route("get_teams")]

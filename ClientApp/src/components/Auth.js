@@ -40,16 +40,17 @@ export default class Auth {
           username: username,
           password: password
         })
-      });
+      })
       const result = await response;
+        debugger;
       if(result.status === 400){
         var responseBody = result.json();
-        return { error : responseBody.error }
-      }
-      else{
-        this.createLoggedInCookie()
-        return result.statusText;
-      }
+          return { error : responseBody.error}
+        }
+        else{
+          this.createLoggedInCookie()
+          return ;
+        }
     }
 
     logout = async function(){

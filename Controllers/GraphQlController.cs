@@ -12,7 +12,7 @@ using StepChallenge.Validation;
 
 namespace StepChallenge.Controllers
 {
-   //[Authorize]
+   [Authorize]
    [Route("graphql")]
    public class GraphQlController : Controller
    {

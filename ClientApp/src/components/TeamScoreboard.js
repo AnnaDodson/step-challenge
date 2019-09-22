@@ -10,7 +10,7 @@ async function loadUserSteps(id) {
      { teamSteps( teamId : $teamId )
         {stepCount, dateOfSteps}, 
         team (teamId: $teamId )
-        {teamName}
+        {teamName, participants { participantName }}
       } ",
     "variables": {
      "teamId": "0"
@@ -36,14 +36,21 @@ export class TeamScoreboard extends Component {
     loadUserSteps(teamId).then(res =>
       this.setState({
         steps : res.teamSteps,
-        teamName:res.team.name,
+        teamName:res.team.teamName,
+        participants : res.team.participants,
         loading: false,
       }))
   }
 
-  static renderTeamScores (steps) {
+  static renderTeamScores (steps, participants, teamName) {
     return (
         <div>
+          <h3>{ teamName }</h3>
+          <p>
+          {participants.map(participant =>
+            <span>{participant.participantName}, </span>
+          )}
+          </p>
           < CreateStepTable data={steps} table={"team"} />
         </div>
         )
@@ -52,8 +59,8 @@ export class TeamScoreboard extends Component {
   render () {
     let contents = this.state.loading
       ? <p><em>Loading...</em></p>
-      : TeamScoreboard.renderTeamScores(this.state.steps);
-
+      : TeamScoreboard.renderTeamScores(this.state.steps, this.state.participants, this.state.teamName);
+    
     return (
       <div>
         <h2>Team Scores</h2>
