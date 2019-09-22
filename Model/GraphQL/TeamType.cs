@@ -10,8 +10,8 @@ namespace Model.GraphQL
             Name = "Team";
             
             Field(x => x.TeamId, type: typeof(IdGraphType)).Description("The ID of the Team.");
-            Field(x => x.Name).Description("The name of the Team");
-            Field(x => x.Users, type: typeof(ListGraphType<UserType>)).Description("Users in the Team");
+            Field(x => x.TeamName).Description("The name of the Team");
+            Field(x => x.Participants, type: typeof(ListGraphType<ParticipantType>)).Description("Users in the Team");
         }
         
     }

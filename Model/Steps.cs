@@ -11,8 +11,8 @@ namespace Model
         public int Week { get; set; }
         public int Day { get; set; }
         
-        [ForeignKey("User")]
-        public int UserId { get; set; }
+        [ForeignKey("Participant")]
+        public int ParticipantId { get; set; }
         
     }
 }
