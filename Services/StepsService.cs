@@ -84,6 +84,31 @@ namespace StepChallenge.Services
 
             return days;
         }
+        public List<Steps> GetLatestWeeksSteps(List<Steps> steps)
+        {
+            DateTime thisWeek = DateTime.Now.AddDays(7);
+            DateTime thisSunday = StartOfWeek(thisWeek, DayOfWeek.Sunday);
+            
+            var days = new List<Steps>();
+            for (var dt = _startDate; dt <= thisSunday; dt = dt.AddDays(1))
+            {
+                var teamStepDay = steps.Where(s => s.DateOfSteps == dt).ToList();
+                var dayStepCount = new Steps
+                {
+                    StepCount = teamStepDay.Sum(s => s.StepCount),
+                    DateOfSteps = dt,
+                };
+                days.Add(dayStepCount);
+            }
+
+            return days;
+        }
+
+        private static DateTime StartOfWeek(DateTime dt, DayOfWeek startOfWeek)
+        {
+            int diff = (7 + (dt.DayOfWeek - startOfWeek)) % 7;
+            return dt.AddDays(-1 * diff).Date;
+        }
 
     }
 }

@@ -13,6 +13,17 @@ async function loadUserSteps(id) {
   return response.participant;
 }
 
+async function getTotalSteps() {
+ var query = `{
+  "query": "query participantQuery( $participantId : ID!) { participant( participantId : $participantId) {  stepCountTotal }}",
+  "variables": {
+   "participantId": "null" }
+  }`
+  var apiHelper = new ApiHelper();
+  const response = await apiHelper.GraphQlApiHelper(query);
+  return response.participant;
+}
+
 class UserSteps extends Component {
   constructor(props) {
      super(props);
@@ -21,7 +32,8 @@ class UserSteps extends Component {
        teamName:'',
        steps: [],
        userName : '',
-       loading: true
+       loading: true,
+       loadingSteps: true
       }
   }
 
@@ -33,6 +45,13 @@ class UserSteps extends Component {
         steps : res.steps,
         loading: false,
       }))
+      /*
+      getTotalSteps().then(res =>
+        this.setState({
+          loadingTotal: false,
+          totalSteps: 0,
+      }))
+      */
   }
   
 
@@ -48,6 +67,10 @@ class UserSteps extends Component {
     let contents = this.state.loading
       ? <p><em>Loading...</em></p>
       : UserSteps.renderUserStepTable(this.state.steps);
+
+    let totalSteps = this.state.loadingSteps
+      ? <p><em>Loading...</em></p>
+      : this.state.steps;
 
     return (
       <div>
