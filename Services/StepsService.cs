@@ -46,18 +46,19 @@ namespace StepChallenge.Services
                 DateOfSteps = stepsDay,
                 StepCount = steps.StepCount,
                 Day = (int)steps.DateOfSteps.DayOfWeek,
-                ParticipantId = steps.UserId,
+                ParticipantId = steps.ParticipantId,
                 Week = weekNo,
             };
 
             var existingStepCount = await _stepContext.Steps
-                .Where(s => s.ParticipantId == steps.UserId)
+                .Where(s => s.ParticipantId == steps.ParticipantId)
                 .Where(s => s.DateOfSteps == stepsDay)
                 .SingleOrDefaultAsync();
 
             if (existingStepCount != null)
             {
-                existingStepCount.StepCount = newSteps.StepCount;
+                existingStepCount. StepCount = newSteps.StepCount;
+                _stepContext.Steps.Update(existingStepCount);
                 await _stepContext.SaveChangesAsync();
                 return existingStepCount;
             }

@@ -18,8 +18,13 @@ namespace StepChallenge.Mutation
                 resolve: context =>
                 {
                     var steps = context.GetArgument<StepsInputs>("steps");
-                    var savedSteps = stepsService.CreateAsync(steps);
-                    return savedSteps;
+                    //var savedSteps = stepsService.CreateAsync(steps);
+                    var step = new Steps
+                    {
+                        StepCount = steps.StepCount
+                    };
+                    
+                    return step;
                 });
         }
     }

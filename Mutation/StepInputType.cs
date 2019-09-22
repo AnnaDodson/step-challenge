@@ -13,7 +13,7 @@ namespace StepChallenge.Mutation
             //Field(x => x.UserId);
             //Field(x => x.DateOfSteps);
             Field<NonNullGraphType<IntGraphType>>("stepCount");
-            Field<NonNullGraphType<IntGraphType>>("userId");
+            Field<NonNullGraphType<IntGraphType>>("participantId");
             Field<NonNullGraphType<DateTimeGraphType>>("dateOfSteps").Metadata.Add(nameof(StepValidationRule), null);
             /*
             Field<NonNullGraphType<DateTimeOffsetGraphType>>(x => x.DateOfSteps)

@@ -1,21 +1,31 @@
 import React, { Component } from 'react'
 import * as moment from 'moment';
-import { BrowserIcon, ICON } from '../icons/EditIcon';
+import { OkIcon, EditIcon, ICON } from '../icons/EditIcon';
 
 async function setUserSteps(newValue, date){
   // TODO - just take the date and remove the time plus any time zone stuff
   // Moment and GraphQL don't like dates
-  var format = moment(date);
-  var dateString = format.year() + "-" + ( format.month() + 1 ) + "-" + format.date() + "T00:00:00+00:00";
-  const response = await fetch('/graphql', {
-   method:'POST',
-   headers:{'content-type':'application/json'},
-   body: JSON.stringify({
-       "query": ` mutation creatStepsEntry ( $participantId : Int! )
-       { creatStepsEntry ( steps: {  	stepCount : ${newValue} , dateOfSteps :  "${dateString}"  , participantId :  $participantId } )  {stepCount} } `
-       , "variables" : { "participantId" : 1 }  
-      })
-  })
+    var format = moment(date);
+    var dateString = format.year() + "-" + ( format.month() + 1 ) + "-" + format.date() + "T00:00:00+00:00";
+    const response = await fetch('/graphql', {
+     method:'POST',
+     headers:{'content-type':'application/json'},
+     body: JSON.stringify({
+         "query": ` mutation creatStepsEntry ( $participantId : Int! )
+         { creatStepsEntry ( steps: {  	stepCount : ${newValue} , dateOfSteps :  "${dateString}"  , participantId :  $participantId } )  {stepCount} } `
+         , "variables" : { "participantId" : 1 }  
+        })
+    })
+    // TODO So GraphQL does a great job of aggressively caching data but isn't so goon on the saving to the database stuff. This needs looking at
+    fetch('/api/steps/save_steps', {
+      method:'POST',
+      headers:{'content-type':'application/json'},
+      body: JSON.stringify({
+          stepCount : newValue,
+          dateOfSteps :  dateString
+         })
+    });
+
   const responseBody = await response.json();
   var result = null;
   if(responseBody.hasOwnProperty("creatStepsEntry") && responseBody.creatStepsEntry.hasOwnProperty("stepCount") ){
@@ -25,7 +35,7 @@ async function setUserSteps(newValue, date){
 }
 
 const inputStyle = {
-  width: "20%"
+    width: "50px"
 };
 
 class UserStep extends Component {
@@ -53,18 +63,17 @@ class UserStep extends Component {
           {!this.state.editing &&
             <p>{this.state.steps}
               <button type="button" className="btn " onClick={this.handleEditing}>
-                <BrowserIcon color={ICON.COLORS.BRAND} size={ICON.SIZES.MED} />
+                <EditIcon color={ICON.COLORS.BRAND} size={ICON.SIZES.MED} />
               </button>
             </p>
           }
           {this.state.editing &&
               <div>
-                <form style={inputStyle} onSubmit={this.handleSubmit} key={this.state.steps}>
+                <form onSubmit={this.handleSubmit} key={this.state.steps}>
                   <label>
-                    <input type="text" value={this.state.value} onChange={this.handleChange} />
+                    <input style={inputStyle} type="text" value={this.state.value} onChange={this.handleChange} />
                   </label>
-                  <br />
-                  <input type="submit" data-date="test" value="Submit" />
+                  <input type="submit" data-date="test" value="Ok" />
                 </form>
               </div>
           }

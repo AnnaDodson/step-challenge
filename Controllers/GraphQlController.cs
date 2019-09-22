@@ -33,13 +33,13 @@ namespace StepChallenge.Controllers
       
       public async Task<IActionResult> Post([FromBody] GraphQLQuery graphQuery)
       {
-         var t = Request;
          if(graphQuery == null)
          {
             return BadRequest("No Query");
          }
          
          var inputs = graphQuery.Variables.ToInputs();
+         
          if (inputs.ContainsKey("participantId"))
          {
             var user = await _userManager.GetUserAsync(User);

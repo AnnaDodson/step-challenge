@@ -20,6 +20,7 @@ class CreateStepTable extends Component{
       }
       table.push(<tr key={'header'}>{header}</tr>)
       var week = 1;
+      var totalCount = 0;
       let children = []
       for (let i = 0; i < ( steps.length ); i++) {
         if(children.length === 0){
@@ -28,6 +29,7 @@ class CreateStepTable extends Component{
         }
         var dateOfSteps = moment(steps[i].dateOfSteps);
         var stepCount = steps[i].stepCount;
+        totalCount = totalCount + stepCount;
         if(type === "user"){
               var data = {
                 count : stepCount,
@@ -45,6 +47,7 @@ class CreateStepTable extends Component{
         if(children.length === 8){
           table.push(<tr key={'col_' + i}>{children}</tr>)
           children = []
+          totalCount = 0;
           week = week +1;
         }
       }
