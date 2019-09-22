@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import ApiHelper from './ApiHelper';
 
 export class ScoreBoard extends Component {
   static displayName = ScoreBoard.name;
@@ -6,16 +7,10 @@ export class ScoreBoard extends Component {
   constructor (props) {
     super(props);
     this.state = { forecasts: [], loading: true };
-
-    fetch('/graphql', {
-     method:'POST',
-     headers:{'content-type':'application/json'},
-     body:JSON.stringify({query:
-      `{leaderBoard{teamScores { teamId, teamName, teamStepCount }}}`
-    })})
-    .then(response => response.json())
+    this.apiHelper = new ApiHelper();
+    var query = `{"query" : "{ leaderBoard{teamScores { teamId, teamName, teamStepCount } }}"}`
+    this.apiHelper.GraphQlApiHelper(query)
     .then(data => {
-      debugger;
         this.setState({ forecasts: data.leaderBoard.teamScores, loading: false });
     })
   }

@@ -1,13 +1,13 @@
 import React, { Component } from 'react'
 import * as moment from 'moment';
+//import ApiHelper from './ApiHelper';
 
 var userId;
-var teamId = 1;
 
 async function setUserSteps(newValue, date){
+  // TODO - just take the date and remove the time plus any time zone stuff
     var dateISO = moment(date).format();
-    console.log(dateISO);
-  const response = await fetch('/graphql', {
+    const response = await fetch('/graphql', {
      method:'POST',
      headers:{'content-type':'application/json'},
      body:JSON.stringify({query:
@@ -24,7 +24,6 @@ async function setUserSteps(newValue, date){
 
 class UserStep extends Component {
   constructor(props) {
-      console.log("here");
     super(props);
     userId = props.data.userId;
     var formatDate = moment(props.data.date).format('MMM Do');

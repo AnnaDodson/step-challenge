@@ -4,16 +4,20 @@ import { Layout } from './components/Layout';
 import { Home } from './components/Home';
 import { ScoreBoard } from './components/ScoreBoard';
 import { TeamScoreboard } from './components/TeamScoreboard';
+import { Register } from './components/Register';
+import { Login } from './components/Login';
 
 export default class App extends Component {
   static displayName = App.name;
 
   render () {
     return (
-      <Layout>
+      <Layout >
         <Route exact path='/' component={Home} />
         <Route path='/team-scoreboard' component={TeamScoreboard} />
-        <Route path='/fetch-data' component={ScoreBoard} />
+        <Route path='/scoreboard' component={ScoreBoard} />
+        <Route path='/register' component={Register} />
+        <Route path='/login' component={Login} />
       </Layout>
     );
   }
