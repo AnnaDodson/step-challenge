@@ -1,19 +1,21 @@
 import React, { Component } from 'react'
 import * as moment from 'moment';
-//import ApiHelper from './ApiHelper';
-
-var userId;
+import { BrowserIcon, ICON } from '../icons/EditIcon';
 
 async function setUserSteps(newValue, date){
   // TODO - just take the date and remove the time plus any time zone stuff
-    var dateISO = moment(date).format();
-    const response = await fetch('/graphql', {
-     method:'POST',
-     headers:{'content-type':'application/json'},
-     body:JSON.stringify({query:
-      `mutation creatStepsEntry {creatStepsEntry ( steps: { stepCount : ${newValue} , dateOfSteps : "${dateISO}", userId : ${userId} }){stepCount}}`
-    })
-  });
+  // Moment and GraphQL don't like dates
+  var format = moment(date);
+  var dateString = format.year() + "-" + ( format.month() + 1 ) + "-" + format.date() + "T00:00:00+00:00";
+  const response = await fetch('/graphql', {
+   method:'POST',
+   headers:{'content-type':'application/json'},
+   body: JSON.stringify({
+       "query": ` mutation creatStepsEntry ( $participantId : Int! )
+       { creatStepsEntry ( steps: {  	stepCount : ${newValue} , dateOfSteps :  "${dateString}"  , participantId :  $participantId } )  {stepCount} } `
+       , "variables" : { "participantId" : 1 }  
+      })
+  })
   const responseBody = await response.json();
   var result = null;
   if(responseBody.hasOwnProperty("creatStepsEntry") && responseBody.creatStepsEntry.hasOwnProperty("stepCount") ){
@@ -22,10 +24,13 @@ async function setUserSteps(newValue, date){
   return result;
 }
 
+const inputStyle = {
+  width: "20%"
+};
+
 class UserStep extends Component {
   constructor(props) {
     super(props);
-    userId = props.data.userId;
     var formatDate = moment(props.data.date).format('MMM Do');
     this.state =  {
        step: props.data,
@@ -44,22 +49,25 @@ class UserStep extends Component {
   render() {
       return(
         <div>
-          <p>{this.state.steps}</p>
-        {!this.state.editing &&
-          <button type="button" className="btn btn-info" onClick={this.handleEditing}>Edit</button>
-        }
-        {this.state.editing &&
-            <div>
-              <form onSubmit={this.handleSubmit} key={this.state.steps}>
-                <label>
-                  <input type="text" value={this.state.value} onChange={this.handleChange} />
-                </label>
-                <br />
-                <input type="submit" data-date="test" value="Submit" />
-              </form>
-            </div>
-        }
-        <p>{this.state.formattedDate}</p>
+          <p>{this.state.formattedDate}</p>
+          {!this.state.editing &&
+            <p>{this.state.steps}
+              <button type="button" className="btn " onClick={this.handleEditing}>
+                <BrowserIcon color={ICON.COLORS.BRAND} size={ICON.SIZES.MED} />
+              </button>
+            </p>
+          }
+          {this.state.editing &&
+              <div>
+                <form style={inputStyle} onSubmit={this.handleSubmit} key={this.state.steps}>
+                  <label>
+                    <input type="text" value={this.state.value} onChange={this.handleChange} />
+                  </label>
+                  <br />
+                  <input type="submit" data-date="test" value="Submit" />
+                </form>
+              </div>
+          }
       </div>
       )
   }
