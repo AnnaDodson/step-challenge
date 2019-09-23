@@ -81,12 +81,14 @@ export class Login extends Component {
     event.preventDefault();
     userLogin(this.state.username, this.state.password)
       .then(function(error){
-        debugger;
         if(error){
           self.setState({error: error.error ? error.error : "Something went wrong"});
         }
         else{
-          self.props.history.push('/')
+          //self.props.history.push('/')
+          // Force window to refresh so the nav is shown based on the logged in cookie we just set.
+          // TODO - should be a way of updating the nav component without refreshing the page?
+          window.location.href = "/";
         }
       })
   }
