@@ -18,7 +18,7 @@ async function registerUser(name, email, password, team){
       name: name,
       email: email,
       password: password,
-      teamId: parseInt(team, 10)
+      teamId: team
     })
   });
   const responseBody = await response.json();
@@ -49,7 +49,7 @@ export class Register extends Component {
         email : '',
         name : '',
         password : '',
-        team : null,
+        team : 1,
         error : null,
     }
     this.handleChangePassword = this.handleChangePassword.bind(this);
@@ -141,7 +141,10 @@ export class Register extends Component {
           console.log("registered")
           var auth = new Auth();
           auth.createLoggedInCookie()
-          self.props.history.push('/')
+          //self.props.history.push('/')
+          // Force window to refresh so the nav is shown based on the logged in cookie we just set.
+          // TODO - should be a way of updating the nav component without refreshing the page?
+          window.location.href = "/";
         }
     })
   }

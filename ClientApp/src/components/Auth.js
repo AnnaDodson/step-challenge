@@ -42,7 +42,6 @@ export default class Auth {
         })
       })
       const result = await response;
-        debugger;
       if(result.status === 400){
         var responseBody = result.json();
           return { error : responseBody.error}

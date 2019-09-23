@@ -55,9 +55,10 @@ class UserSteps extends Component {
   }
   
 
-  static renderUserStepTable (steps) {
+  static renderUserStepTable (name, steps) {
     return (
         <div>
+        <p>{name}</p>
           < CreateStepTable data={steps} table={"user"} />
         </div>
         )
@@ -66,7 +67,7 @@ class UserSteps extends Component {
   render() {
     let contents = this.state.loading
       ? <p><em>Loading...</em></p>
-      : UserSteps.renderUserStepTable(this.state.steps);
+      : UserSteps.renderUserStepTable(this.state.userName, this.state.steps);
 
     let totalSteps = this.state.loadingSteps
       ? <p><em>Loading...</em></p>
