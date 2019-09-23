@@ -42,6 +42,13 @@ namespace StepChallenge.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult> RegisterUserPostAsync([FromBody] InputModel inputModel)
         {
+            if (inputModel == null)
+            {
+                var err = new Dictionary<string, string>();
+                err.Add("error", "Invalid request");
+                return new BadRequestObjectResult(err);
+            }
+
             // check it's a valid team and the user doesn't already exist
             var teamExists = await _teamService.TeamExists(inputModel.TeamId);
 
