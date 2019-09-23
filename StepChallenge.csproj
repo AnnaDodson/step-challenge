@@ -12,6 +12,7 @@
     <Content Include="Pages\Shared\_LoginPartial.cshtml" />
     <Content Include="Pages\_Login.cshtml" />
     <Content Include="Pages\_LoginPartial.cshtml" />
+    <Content Include="Properties\launchSettings.json" />
     <PackageReference Include="graphiql" Version="1.2.0" />
     <PackageReference Include="graphql" Version="2.4.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
