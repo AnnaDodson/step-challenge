@@ -26,6 +26,11 @@ $ npm start
 
 The main dotnet app is configured to proxy to the front end port, you can change this in the `StartUp.cs` file if you don't need to build the React front end.
 
+Make sure your environment variable is set to development.
+```
+ASPNETCORE_Environment=Development
+```
+
 Then run the dotnet app from the command line:
 
 ```
