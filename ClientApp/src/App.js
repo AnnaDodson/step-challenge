@@ -6,6 +6,7 @@ import { ScoreBoard } from './components/ScoreBoard';
 import { TeamScoreboard } from './components/TeamScoreboard';
 import { Register } from './components/Register';
 import { Login } from './components/Login';
+import { Account } from './components/Account';
 
 export default class App extends Component {
   static displayName = App.name;
@@ -18,6 +19,7 @@ export default class App extends Component {
         <Route path='/scoreboard' component={ScoreBoard} />
         <Route path='/register' component={Register} />
         <Route path='/login' component={Login} />
+        <Route path='/account' component={Account} />
       </Layout>
     );
   }
