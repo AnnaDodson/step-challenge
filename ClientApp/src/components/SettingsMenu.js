@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 import Dropdown from 'react-bootstrap/Dropdown';
 import Auth from './Auth';
 
@@ -20,7 +21,7 @@ export default class SettingsMenu extends Component {
             </Dropdown.Toggle>
 
             <Dropdown.Menu>
-              <Dropdown.Item>Account</Dropdown.Item>
+              <Dropdown.Item><Link to="/account">Account</Link></Dropdown.Item>
               <Dropdown.Item onClick={this.handleLogout}>Log out</Dropdown.Item>
             </Dropdown.Menu>
         </Dropdown>
