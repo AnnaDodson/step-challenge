@@ -13,7 +13,7 @@ namespace StepChallenge
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlite("Data Source=StepChallenge.db");
+            optionsBuilder.UseSqlite("Data Source=db/StepChallenge.db");
         }
         
     }

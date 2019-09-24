@@ -31,6 +31,12 @@ Make sure your environment variable is set to development.
 ASPNETCORE_Environment=Development
 ```
 
+And ensure you have a database in the `db/` directory
+
+```
+$ dotnet ef database update
+```
+
 Then run the dotnet app from the command line:
 
 ```
