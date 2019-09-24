@@ -61,6 +61,8 @@ export class Login extends Component {
               {this.state.error &&
                 <p style={errorStyle}>{this.state.error}</p>
               }
+              <br />
+              <p><a href="/register">Register here</a></p>
             </div>
         </div>
     );

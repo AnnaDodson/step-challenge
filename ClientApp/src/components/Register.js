@@ -49,7 +49,7 @@ export class Register extends Component {
         email : '',
         name : '',
         password : '',
-        team : 1,
+        team : 0,
         error : null,
     }
     this.handleChangePassword = this.handleChangePassword.bind(this);
@@ -93,6 +93,7 @@ export class Register extends Component {
                 </label>
                 <br />
                   <select key={teams} value={this.state.team} onChange={this.handleChangeTeam}>
+                    <option value='0' disabled>Choose a team</option>
                     {teams.map(team =>
                       <option key={team.teamId} value={team.teamId}>{ team.teamName }</option>
                     )}
@@ -100,7 +101,7 @@ export class Register extends Component {
 
                 <br />
                 <br />
-                <input type="submit" data-date="test" value="Submit" />
+                <input type="submit" disabled={!this.state.team} data-date="test" value="Submit" />
               </form>
               {this.state.error &&
                 <p style={errorStyle}>{this.state.error}</p>
