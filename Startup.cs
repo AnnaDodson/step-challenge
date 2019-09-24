@@ -73,13 +73,12 @@ namespace StepChallenge
             services.Configure<IdentityOptions>(options =>
             {
                 // Password settings.
-                // TODO set these to something sensible
                 options.Password.RequireDigit = false;
-                        options.Password.RequireLowercase = false;
-                        options.Password.RequireNonAlphanumeric = false;
-                        options.Password.RequireUppercase = false;
-                        options.Password.RequiredLength = 4;
-                        options.Password.RequiredUniqueChars = 0;
+                        options.Password.RequireLowercase = true;
+                        options.Password.RequireNonAlphanumeric = true;
+                        options.Password.RequireUppercase = true;
+                        options.Password.RequiredLength = 8;
+                        options.Password.RequiredUniqueChars = 1;
 
                 // Lockout settings.
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
