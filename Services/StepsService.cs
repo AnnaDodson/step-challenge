@@ -21,7 +21,16 @@ namespace StepChallenge.Services
             _stepContext = stepContext;
         }
         
-        public async Task<Steps> CreateAsync(StepsInputs steps)
+        public Steps Update(Steps existingStepCount, StepsInputs steps)
+        {
+            existingStepCount.StepCount = steps.StepCount;
+
+            _stepContext.SaveChanges();
+
+            return existingStepCount;
+        }
+
+        public Steps Create(StepsInputs steps)
         {
             var challengeStartDate = new DateTime(2019,09,16);
             var currentCulture = CultureInfo.CurrentCulture;
@@ -40,7 +49,7 @@ namespace StepChallenge.Services
 
             var stepsDay = new DateTime(steps.DateOfSteps.Year, steps.DateOfSteps.Month, steps.DateOfSteps.Day, 0,
                 0, 0);
-            
+
             var newSteps = new Steps
             {
                 DateOfSteps = stepsDay,
@@ -50,21 +59,9 @@ namespace StepChallenge.Services
                 Week = weekNo,
             };
 
-            var existingStepCount = await _stepContext.Steps
-                .Where(s => s.ParticipantId == steps.ParticipantId)
-                .Where(s => s.DateOfSteps == stepsDay)
-                .SingleOrDefaultAsync();
-
-            if (existingStepCount != null)
-            {
-                existingStepCount. StepCount = newSteps.StepCount;
-                _stepContext.Steps.Update(existingStepCount);
-                await _stepContext.SaveChangesAsync();
-                return existingStepCount;
-            }
-
             _stepContext.Steps.Add(newSteps);
-            await _stepContext.SaveChangesAsync();
+            _stepContext.SaveChanges();
+
             return newSteps;
         }
 

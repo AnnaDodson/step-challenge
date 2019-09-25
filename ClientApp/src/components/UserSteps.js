@@ -42,7 +42,7 @@ class UserSteps extends Component {
       this.setState({
         teamName:res.team.teamName,
         userName: res.participantName,
-        steps : res.steps,
+        steps : res.steps != null ? res.steps : [],
         loading: false,
       }))
       /*
