@@ -35,11 +35,9 @@ namespace StepChallenge.Query
                         .OrderBy(s => s.DateOfSteps)
                         .ToList();
 
-                    var days = stepsService.GetLatestWeeksSteps(steps);
-
                     if (participant != null)
                     {
-                        participant.Steps = days;
+                        participant.Steps = steps;
                     }
 
                     return participant;
@@ -64,12 +62,17 @@ namespace StepChallenge.Query
                         .Include("Participants")
                         .FirstOrDefault(i => i.TeamId == id);
 
-                    var steps = db.Steps
+                    var teamSteps = db.Steps
                         .Where(s => team.Participants.Any(t => t.ParticipantId == s.ParticipantId))
                         .Where(s => s.DateOfSteps >= startDate && s.DateOfSteps < endDate)
+                        .GroupBy(s => s.DateOfSteps)
+                        .Select(s => new Steps
+                        {
+                            DateOfSteps = s.First().DateOfSteps,
+                            StepCount = s.Sum(st => st.StepCount)
+                        })
+                        .OrderBy(s => s.DateOfSteps)
                         .ToList();
-
-                    var teamSteps = stepsService.GetLatestWeeksSteps(steps);
 
                     return teamSteps;
                 });

@@ -28,16 +28,12 @@ namespace StepChallenge.Mutation
                     var existingStepCount = db.Steps
                         .Where(s => s.ParticipantId == steps.ParticipantId)
                         .FirstOrDefault(s => s.DateOfSteps == stepsDay);
-                    
-                    var savedSteps = new Steps();
 
                     if(existingStepCount != null){
-                         return stepsService.Update(existingStepCount, steps);
-                    }
-                    else{
-                        return stepsService.Create(steps);
+                        return stepsService.Update(existingStepCount, steps);
                     }
                     
+                    return stepsService.Create(steps);
                 });
         }
     }

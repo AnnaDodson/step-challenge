@@ -5,29 +5,17 @@ import { OkIcon, EditIcon, ICON } from '../icons/EditIcon';
 async function setUserSteps(newValue, date){
   // TODO - just take the date and remove the time plus any time zone stuff
   // Moment and GraphQL don't like dates
-    var format = moment(date);
-    var dateString = format.year() + "-" + ( format.month() + 1 ) + "-" + format.date() + "T00:00:00+00:00";
-    const response = await fetch('/graphql', {
-     method:'POST',
-     headers:{'content-type':'application/json'},
-     body: JSON.stringify({
-         "query": ` mutation creatStepsEntry ( $participantId : Int! )
-         { creatStepsEntry ( steps: {  	stepCount : ${newValue} , dateOfSteps :  "${dateString}"  , participantId :  $participantId } )  {stepCount} } `
-         , "variables" : { "participantId" : 1 }  
-        })
-    })
-    // TODO So GraphQL does a great job of aggressively caching data but isn't so goon on the saving to the database stuff. This needs looking at
-    /*
-    fetch('/api/steps/save_steps', {
-      method:'POST',
-      headers:{'content-type':'application/json'},
-      body: JSON.stringify({
-          stepCount : newValue,
-          dateOfSteps :  dateString
-         })
-    });
-    */
-
+  var format = moment(date);
+  var dateString = format.year() + "-" + ( format.month() + 1 ) + "-" + format.date() + "T00:00:00+00:00";
+  const response = await fetch('/graphql', {
+   method:'POST',
+   headers:{'content-type':'application/json'},
+   body: JSON.stringify({
+       "query": ` mutation creatStepsEntry ( $participantId : Int! )
+       { creatStepsEntry ( steps: {  	stepCount : ${newValue} , dateOfSteps :  "${dateString}"  , participantId :  $participantId } )  {stepCount} } `
+       , "variables" : { "participantId" : 1 }
+      })
+  })
   const responseBody = await response.json();
   var result = null;
   if(responseBody.hasOwnProperty("creatStepsEntry") && responseBody.creatStepsEntry.hasOwnProperty("stepCount") ){
