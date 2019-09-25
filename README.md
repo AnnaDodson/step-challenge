@@ -62,3 +62,38 @@ $ dotnet build
 ```
 
 **Note, this currently doesn't work very well!
+
+## To Build and Run in Docker
+
+Build the docker image:
+
+```
+$ git clone https://github.com/powercrazed/step-challenge.git
+$ cd step-challenge
+$ git checkout docker
+# docker build -t stepchallenge .
+```
+
+Create a volume for the database:
+
+```
+# docker volume create stepchallenge-db
+```
+
+Create the Container:
+
+```
+# docker create --name=stepchallenge -v stepchallenge-db:/app/db -p 80:80 --restart=unless-stopped stepchallenge
+```
+
+Copy in the blank database (first run only):
+
+```
+# docker cp <path to StepChallenge.db> stepchallenge:/app/db
+```
+
+Start the container:
+
+```
+# docker start stepchallenge
+```
