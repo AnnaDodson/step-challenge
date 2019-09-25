@@ -43,7 +43,7 @@ export class Login extends Component {
             <div>
               <form style={formStyle} onSubmit={this.handleSubmit} key="login">
                 <label>
-                  Username
+                  Email
                 </label>
                 <br />
                   <input type="text" value={this.state.username} onChange={this.handleChangeUsername} />

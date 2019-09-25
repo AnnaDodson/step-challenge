@@ -49,10 +49,12 @@ export class Register extends Component {
         email : '',
         name : '',
         password : '',
+        passwordConfirm : '',
         team : 0,
         error : null,
     }
     this.handleChangePassword = this.handleChangePassword.bind(this);
+    this.handleChangePasswordConfirm = this.handleChangePasswordConfirm.bind(this);
     this.handleChangeName = this.handleChangeName.bind(this);
     this.handleChangeEmail = this.handleChangeEmail.bind(this);
     this.handleChangeTeam = this.handleChangeTeam.bind(this);
@@ -89,6 +91,12 @@ export class Register extends Component {
                   <input type="password" value={this.state.password} onChange={this.handleChangePassword} />
                 <br />
                 <label>
+                  Confirm Password
+                </label>
+                <br />
+                  <input type="password" value={this.state.passwordConfirm} onChange={this.handleChangePasswordConfirm} />
+                <br />
+                <label>
                   Team
                 </label>
                 <br />
@@ -101,7 +109,7 @@ export class Register extends Component {
 
                 <br />
                 <br />
-                <input type="submit" disabled={!this.state.team} data-date="test" value="Submit" />
+                <input type="submit" disabled={!this.state.team || this.state.error} data-date="test" value="Submit" />
               </form>
               {this.state.error &&
                 <p style={errorStyle}>{this.state.error}</p>
@@ -114,21 +122,46 @@ export class Register extends Component {
   handleChangePassword(event) {
     this.setState({error: null});
     this.setState({password: event.target.value});
+    if(this.state.password !== event.target.value)
+    {
+      this.setState({error: "Passwords don't match"});
+    }
+  }
+
+  handleChangePasswordConfirm(event) {
+    this.setState({error: null});
+    this.setState({passwordConfirm: event.target.value});
+    if(this.state.password !== event.target.value)
+    {
+      this.setState({error: "Passwords don't match"});
+    }
   }
 
   handleChangeEmail(event) {
     this.setState({error: null});
     this.setState({email: event.target.value});
+    if(this.state.password !== event.target.value)
+    {
+      this.setState({error: "Passwords don't match"});
+    }
   }
 
   handleChangeName(event) {
     this.setState({error: null});
     this.setState({name: event.target.value});
+    if(this.state.password !== event.target.value)
+    {
+      this.setState({error: "Passwords don't match"});
+    }
   }
 
   handleChangeTeam(event) {
     this.setState({error: null});
     this.setState({team: event.target.value});
+    if(this.state.password !== event.target.value)
+    {
+      this.setState({error: "Passwords don't match"});
+    }
   }
 
   handleSubmit(event) {
