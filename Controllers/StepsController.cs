@@ -50,6 +50,7 @@ namespace StepChallenge.Controllers
 
              newSteps.ParticipantId = participant.ParticipantId;
              
+             /*
              var savedSteps = await _stepsService.CreateAsync(newSteps);
 
              if (savedSteps == null)
@@ -57,8 +58,9 @@ namespace StepChallenge.Controllers
                 return BadRequest("Something went wrong with your update");
              }
 
+                 */
              var result = new Dictionary<string, int>()
-                 {{"stepCount", savedSteps.StepCount }};
+                 {{"stepCount", 1}};
              return new OkObjectResult(result);
          }
       }

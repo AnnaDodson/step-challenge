@@ -17,6 +17,7 @@ async function setUserSteps(newValue, date){
         })
     })
     // TODO So GraphQL does a great job of aggressively caching data but isn't so goon on the saving to the database stuff. This needs looking at
+    /*
     fetch('/api/steps/save_steps', {
       method:'POST',
       headers:{'content-type':'application/json'},
@@ -25,6 +26,7 @@ async function setUserSteps(newValue, date){
           dateOfSteps :  dateString
          })
     });
+    */
 
   const responseBody = await response.json();
   var result = null;
