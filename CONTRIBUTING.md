@@ -9,8 +9,6 @@ If this is your first time, follow the steps listed below. Or if you're familiar
    1. [Fork and Clone the Repo](#fork-and-clone-the-repo)
    2. [Adding a Blog Post](#adding-a-blog-post)
    2. [Raising Your Pull Request](#raising-your-pull-request)
-2. [Contributions Through the Web Browser](#contributions-through-the-web-browser)
-3. [Jekyll Theme](#jekyll-theme)
 
 
 ## Code Contributions Through Git
