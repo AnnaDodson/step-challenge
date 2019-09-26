@@ -75,7 +75,7 @@ class UserSteps extends Component {
 
     return (
       <div>
-        <h2>You Steps</h2>
+        <h2>Your Steps</h2>
           {contents}
       </div>
     );
