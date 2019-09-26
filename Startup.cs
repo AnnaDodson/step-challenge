@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Model.GraphQL;
@@ -124,6 +125,7 @@ namespace StepChallenge
             using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
                 var db = serviceScope.ServiceProvider.GetService<StepContext>();
+                db.Database.Migrate();
                 var ideManager = serviceScope.ServiceProvider.GetService<UserManager<IdentityUser>>();
                 var dataSeed = new DataSeed(ideManager);
                 await dataSeed.Run(db);

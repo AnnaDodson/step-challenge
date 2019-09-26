@@ -31,11 +31,8 @@ Make sure your environment variable is set to development.
 ASPNETCORE_Environment=Development
 ```
 
-And ensure you have a database in the `db/` directory
+The sqlite db will be automatically created on startup into the `db` directory and the teams are auto generated.
 
-```
-$ dotnet ef database update
-```
 
 Then run the dotnet app from the command line:
 
