@@ -131,7 +131,7 @@ export class Register extends Component {
   handleChangePasswordConfirm(event) {
     this.setState({error: null});
     this.setState({passwordConfirm: event.target.value});
-    if(this.state.password !== event.target.value)
+    if(this.state.password !== this.state.passwordConfirm)
     {
       this.setState({error: "Passwords don't match"});
     }
@@ -140,7 +140,7 @@ export class Register extends Component {
   handleChangeEmail(event) {
     this.setState({error: null});
     this.setState({email: event.target.value});
-    if(this.state.password !== event.target.value)
+    if(this.state.password !== this.state.passwordConfirm)
     {
       this.setState({error: "Passwords don't match"});
     }
@@ -149,16 +149,17 @@ export class Register extends Component {
   handleChangeName(event) {
     this.setState({error: null});
     this.setState({name: event.target.value});
-    if(this.state.password !== event.target.value)
+    if(this.state.password !== this.state.passwordConfirm)
     {
       this.setState({error: "Passwords don't match"});
     }
   }
 
   handleChangeTeam(event) {
+    debugger;
     this.setState({error: null});
     this.setState({team: event.target.value});
-    if(this.state.password !== event.target.value)
+    if(this.state.password !== this.state.passwordConfirm)
     {
       this.setState({error: "Passwords don't match"});
     }
