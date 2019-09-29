@@ -15,7 +15,7 @@ namespace Model.GraphQL
             Field(x => x.TeamId, type: typeof(IdGraphType)).Description("The Team Id");
             Field(x => x.ParticipantName).Description("The name of the participant");
             Field(x => x.Team, type: typeof(TeamType)).Description("The name of the participants team");
-            Field(x => x.IdentityUser.Email).Description("Participants Email address");
+            Field(x => x.IdentityUser.Email, type: typeof(StringGraphType)).Name("Email").Description("Participants Email address");
         }
     }
 }
