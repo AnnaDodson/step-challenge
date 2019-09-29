@@ -16,6 +16,7 @@
     <Content Include="Properties/launchSettings.json" />
     <PackageReference Include="graphiql" Version="1.2.0" />
     <PackageReference Include="graphql" Version="2.4.0" />
+    <PackageReference Include="GraphQL.Authorization" Version="2.1.29" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
     <PackageReference Include="Microsoft.AspNetCore.Session" Version="2.2.0" />
