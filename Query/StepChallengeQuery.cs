@@ -111,13 +111,22 @@ namespace StepChallenge.Query
                 {
                     var leaderBoard = new LeaderBoard();
 
-                    var teamSteps = db.Team
-                        .Select(t => new TeamScores
-                        {
-                            TeamId = t.TeamId,
-                            TeamName = t.TeamName,
-                            TeamStepCount = t.Participants.Sum(u => u.Steps.Sum(s => s.StepCount))
-                        }).ToList();
+                    DateTime thisWeek = DateTime.Now;
+                    DateTime thisMonday = stepsService.StartOfWeek(thisWeek, DayOfWeek.Monday);
+
+                    leaderBoard.DateOfLeaderboard = thisMonday;
+
+                    var sortedTeams = db.Team
+                        .Where(t => t.Participants.Any(p => p.Steps.Any(s => s.DateOfSteps > startDate && s.DateOfSteps < thisMonday ))
+                            || t.Participants.All(p => p.Steps.All(s => s.StepCount == 0)))
+                        .OrderByDescending(t => t.Participants.Sum(u => u.Steps.Sum(s => s.StepCount)))
+                        .ToList();
+
+                    var teamSteps = sortedTeams.Select(t => new TeamScores
+                    {
+                        TeamId = t.TeamId,
+                        TeamName = t.TeamName
+                    }).ToList();
 
                     leaderBoard.TeamScores = teamSteps;
 
