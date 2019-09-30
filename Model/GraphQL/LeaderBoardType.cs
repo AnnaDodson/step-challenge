@@ -10,7 +10,9 @@ namespace Model.GraphQL
             Name = "LeaderBoard";
             
             Field(x => x.TeamScores , type: typeof(ListGraphType<TeamScoreType>)).Description("The users steps");
-            
+            Field(x => x.DateOfLeaderboard, type: typeof(DateTimeOffsetGraphType))
+                .Description("The date the scores are taken until");
+
         }
         
     }

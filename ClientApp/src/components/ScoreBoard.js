@@ -1,53 +1,57 @@
 import React, { Component } from 'react';
 import ApiHelper from './ApiHelper';
+import * as moment from 'moment';
 
 export class ScoreBoard extends Component {
   static displayName = ScoreBoard.name;
 
   constructor (props) {
     super(props);
-    this.state = { forecasts: [], loading: true };
-    /*
+    this.state = {
+      scores: [],
+      dateOfLeaderboard : null,
+      loading: true
+    };
     this.apiHelper = new ApiHelper();
-    var query = `{"query" : "{ leaderBoard{teamScores { teamId, teamName, teamStepCount } }}"}`
+    var query = `{"query" : "{ leaderBoard{ dateOfLeaderboard, teamScores { teamId, teamName } }}"}`
     this.apiHelper.GraphQlApiHelper(query)
     .then(data => {
-        this.setState({ forecasts: data.leaderBoard.teamScores, loading: false });
+        this.setState({ dateOfLeaderboard: data.leaderBoard.dateOfLeaderboard, scores: data.leaderBoard.teamScores, loading: false });
     })
-    */
   }
 
-  static renderForecastsTable (forecasts) {
-    return (
-      <table className='table table-striped'>
-        <thead>
-          <tr>
-            <th></th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {forecasts.map(forecast =>
-            <tr key={forecast.teamId}>
-              <td>{forecast.teamName}</td>
-              <td>{forecast.teamStepCount}</td>
+  static renderScoreBoard (date, scores) {
+    var dateOfScores = moment(date).format('Do MMM')
+      return(
+      <div>
+        <h3>Updated every Monday<span style={{ fontStyle: "italic", fontSize: "16px" }}> Any new steps added for previous weeks will be included</span> </h3>
+        <table className='table table-striped' style={{ textAlign : "center", fontSize: "24px" }} >
+          <thead>
+            <tr>
+              <th>Teams Step Counts until { dateOfScores }</th>
             </tr>
-          )}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {scores.map(score =>
+              <tr key={score.teamId}>
+                <td>{score.teamName}</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     );
   }
 
   render () {
-    let contents = <p><em>Loading...</em></p>
-    /*this.state.loading
+    let contents =
+    this.state.loading
       ? <p><em>Loading...</em></p>
-      : ScoreBoard.renderForecastsTable(this.state.forecasts);
-      */
+      : ScoreBoard.renderScoreBoard(this.state.dateOfLeaderboard, this.state.scores);
 
     return (
       <div>
-        <h2>Latest Scores</h2>
+        <h2>Leader Board</h2>
         {contents}
       </div>
     );
