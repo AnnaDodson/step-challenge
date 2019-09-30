@@ -2,6 +2,7 @@ using Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
@@ -11,11 +12,14 @@ namespace StepChallenge
     public class DataSeed
     {
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
         public DataSeed(
-            UserManager<IdentityUser> userManager
+            UserManager<IdentityUser> userManager,
+            RoleManager<IdentityRole> roleManager
         )
         {
             _userManager = userManager;
+            _roleManager = roleManager;
         }
         
         public async Task Run(StepContext db)
@@ -37,14 +41,14 @@ namespace StepChallenge
                                 ParticipantId = 1,
                                 ParticipantName = "Alice",
                                 IsAdmin = true,
-                                IdentityUser = await GetIdentityUser("alice", "password"),
+                                IdentityUser = await GetIdentityUser("alice"),
                                 Steps = GetSteps()
                             },
                             new Participant
                             {
                                 ParticipantId = 2,
                                 ParticipantName = "Bob",
-                                IdentityUser = await GetIdentityUser("bob", "password"),
+                                IdentityUser = await GetIdentityUser("bob"),
                                 Steps = GetSteps()
                             }
                         }
@@ -61,14 +65,14 @@ namespace StepChallenge
                             {
                                 ParticipantId = 3,
                                 ParticipantName = "Susan",
-                                IdentityUser = await GetIdentityUser("susan", "password"),
+                                IdentityUser = await GetIdentityUser("susan"),
                                 Steps = GetSteps()
                             },
                             new Participant
                             {
                                 ParticipantId = 4,
                                 ParticipantName = "Helga",
-                                IdentityUser = await GetIdentityUser("helga", "password"),
+                                IdentityUser = await GetIdentityUser("helga"),
                                 Steps = GetSteps()
                             }
                         }
@@ -77,19 +81,30 @@ namespace StepChallenge
                 };
                 
                 teams.AddRange(GetTeams());
-                    
                 db.Team.AddRange(teams);
                 db.SaveChanges();
             }
         }
 
-        private Task<IdentityUser> GetIdentityUser(string username, string password)
+        public async Task SetupRoles()
         {
-            var user = new IdentityUser {UserName = username};
-            _userManager.CreateAsync(user, password);
-            return Task.FromResult(user);
-        }
+             var user = new IdentityUser {UserName = "Admin"};
+             await _userManager.CreateAsync(user, "AdminPassword1!");
+             await _userManager.AddClaimAsync(user, new Claim("role", "Admin"));
 
+             var adminRole = await _roleManager.FindByNameAsync("Admin");
+             if (adminRole == null)
+             {
+                 adminRole = new IdentityRole("Admin");
+                 await _roleManager.CreateAsync(adminRole);
+                 await _roleManager.AddClaimAsync(adminRole, new Claim("Authentication", "Admin"));
+             }
+
+             if (!await _userManager.IsInRoleAsync(user, adminRole.Name))
+             {
+                 await _userManager.AddToRoleAsync(user, adminRole.Name);
+             }
+        }
 
         private List<Steps> GetSteps()
         {
@@ -144,6 +159,13 @@ namespace StepChallenge
                 });
             }
             return newTeams;
+        }
+
+        private async Task<IdentityUser> GetIdentityUser(string name)
+        {
+            var user = new IdentityUser {UserName = name};
+            await _userManager.CreateAsync(user, $"{name}Password1!");
+            return user;
         }
     }
 }

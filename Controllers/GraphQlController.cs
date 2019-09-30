@@ -2,13 +2,16 @@ using System.Linq;
 using System.Threading.Tasks;
 using StepChallenge.Query;
 using GraphQL;
+using GraphQL.Authorization;
 using GraphQL.Types;
 using GraphQL.Validation;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using StepChallenge.Validation;
+using Model.GraphQL;
+using IAuthorizationEvaluator = GraphQL.Authorization.IAuthorizationEvaluator;
 
 namespace StepChallenge.Controllers
 {
@@ -19,19 +22,25 @@ namespace StepChallenge.Controllers
       private readonly StepContext _db;
       private readonly ISchema _schema;
       private readonly UserManager<IdentityUser> _userManager;
+      private readonly IHttpContextAccessor _httpContextAccessor;
+      private readonly IAuthorizationEvaluator _authorizationEvaluator;
 
       public GraphQlController(
          StepContext db,
          ISchema schema,
-         UserManager<IdentityUser> userManager
+         UserManager<IdentityUser> userManager,
+         IHttpContextAccessor httpContextAccessor,
+         IAuthorizationEvaluator authorizationEvaluator
          )
       {
          _db = db;
          _schema = schema;
          _userManager = userManager;
+         _httpContextAccessor = httpContextAccessor;
+         _authorizationEvaluator = authorizationEvaluator;
       }
       
-      public async Task<IActionResult> Post([FromBody] GraphQLQuery graphQuery)
+      public async Task<IActionResult> PostGraphQL( [FromBody] GraphQLQuery graphQuery)
       {
          if(graphQuery == null)
          {
@@ -71,15 +80,23 @@ namespace StepChallenge.Controllers
             
          }
 
+         var context = _httpContextAccessor.HttpContext;
+
+         var graphQlUserContext = new GraphQLUserContext
+         {
+            User = context.User
+         };
+
          var result = await new DocumentExecuter().ExecuteAsync(_ =>
          {
             _.Schema = _schema;
             _.Query = graphQuery.Query;
             _.OperationName = graphQuery.OperationName;
             _.Inputs = inputs;
+            _.UserContext = graphQlUserContext;
             _.ValidationRules = DocumentValidator.CoreRules().Concat(new IValidationRule[]
             {
-               new StepValidationRule()
+               new AuthorizationValidationRule(_authorizationEvaluator)
             });
          }).ConfigureAwait(false);
 
@@ -90,11 +107,11 @@ namespace StepChallenge.Controllers
             {
                msg = msg + " " + err.Message;
             }
-            return BadRequest(msg);
+            return BadRequest(result.Errors.Select(e => e.Message));
          }
 
          return Ok(result.Data);
       }
-      
+
    }
 }

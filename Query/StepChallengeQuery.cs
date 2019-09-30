@@ -43,11 +43,14 @@ namespace StepChallenge.Query
                     return participant;
                 });
             
-            Field<ListGraphType<ParticipantType>>(
-                "Participants",
+            Field<ListGraphType<UserType>>(
+                "Users",
                 resolve: context =>
                 {
-                    var participants = db.Participants;
+                    var participants = db.Participants
+                        .Include("IdentityUser")
+                        .Include("Team");
+
                     return participants;
                 });
 

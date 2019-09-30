@@ -18,20 +18,20 @@ namespace StepChallenge.Controllers
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
-        //private readonly ILogger<RegisterController> _logger;
+        private readonly ILogger<RegisterController> _logger;
         private readonly UserService _userService;
         private readonly TeamService _teamService;
 
         public RegisterController(
             UserManager<IdentityUser> userManager,
             SignInManager<IdentityUser> signInManager,
-            //ILogger<RegisterController> logger,
+            ILogger<RegisterController> logger,
             UserService userService,
             TeamService teamService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            //_logger = logger;
+            _logger = logger;
             _userService = userService;
             _teamService = teamService;
         }
@@ -63,7 +63,7 @@ namespace StepChallenge.Controllers
             var result = await _userManager.CreateAsync(user, inputModel.Password);
             if (result.Succeeded)
             {
-                //_logger.LogInformation("User created a new account with password.");
+                _logger.LogInformation("User created a new account with password.");
                 await _signInManager.SignInAsync(user, isPersistent: false);
             }
 
