@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import ApiHelper from './ApiHelper';
 
 async function loadUsers() {
- var query = `{ "query": "query usersQuery { users { isAdmin, participantName, participantId, email, team {teamName} } }" }`
+ var query = `{ "query": "query usersQuery { users { isAdmin, participantName, username, participantId, team {teamName} } }" }`
   var apiHelper = new ApiHelper();
   const response = await apiHelper.GraphQlApiHelper(query);
   return response.users;
@@ -13,9 +13,9 @@ async function editUser(user){
        method:'POST',
        headers:{'content-type':'application/json'},
        body:JSON.stringify({
-        participantName: user.participantName,
         participantId: user.participantId,
         password: user.password,
+        isAdmin: user.participantAdmin
       })
     })
     var result = await response.json();
@@ -49,53 +49,52 @@ export class Admin extends Component {
     super(props);
     this.state =  {
         users : [],
-        userId : null,
         loading: true,
         editing: false,
         editUser : {},
         error : null,
         success : null,
-        editParticipantName : "",
-        editParticipantEmail : "",
+        editParticipantAdmin : false,
         editParticipantPassword : "",
+        editParticipantName : "",
+        editParticipantUsername : "",
+        editParticipantTeamName : "",
         editParticipantId : 0,
-
     }
     this.handleClick = this.handleClick.bind(this);
-    this.handleChangeName = this.handleChangeName.bind(this);
-    this.handleChangeEmail = this.handleChangeEmail.bind(this);
+    this.handleChangeAdmin = this.handleChangeAdmin.bind(this);
     this.handleChangePassword = this.handleChangePassword.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
-  handleClick(event) {
-    this.setState({editUser: event});
-    this.setState({editParticipantId: event.participantId});
-    this.setState({editParticipantName: event.participantName});
-    this.setState({editParticipantEmail: event.participantEmail});
+  handleClick(user) {
+    this.setState({editing: false, success: false});
+    this.setState({editUser: user});
+    this.setState({editParticipantId: user.participantId});
+    this.setState({editParticipantName: user.participantName});
+    this.setState({editParticipantUsername: user.username});
+    this.setState({editParticipantTeamName: user.team.teamName});
+    this.setState({editParticipantEmail: user.participantEmail});
+    this.setState({editParticipantAdmin: user.isAdmin});
     this.setState({editParticipantPassword: ""});
     this.setState({editing: true});
   }
 
   handleChangePassword(event) {
-    this.setState({error: null});
+    this.setState({error: null, success: null});
     this.setState({editParticipantPassword : event.target.value});
   }
 
-  handleChangeEmail(event) {
-    this.setState({error: null});
-    this.setState({editParticipantEmail : event.target.value});
-  }
-
-  handleChangeName(event) {
-    this.setState({error: null});
-    this.setState({editParticipantName : event.target.value});
+  handleChangeAdmin(event) {
+    var newState = this.state.editParticipantAdmin == true ? false : true;
+    this.setState({error: null, success: null});
+    this.setState({editParticipantAdmin : newState});
   }
 
   handleSubmit(event) {
     var self = this;
     event.preventDefault();
-    editUser( {email: this.state.editParticipantEmail, participantId : this.state.editParticipantId,  participantName : this.state.editParticipantName, password : this.state.editParticipantPassword }).then(function(res){
+    editUser( {participantAdmin: this.state.editParticipantAdmin, email: this.state.editParticipantEmail, participantId : this.state.editParticipantId,  participantName : this.state.editParticipantName, password : this.state.editParticipantPassword }).then(function(res){
         if(res.error){
             console.log(res.error);
             self.setState({error: res.error});
@@ -126,7 +125,7 @@ export class Admin extends Component {
                     {!this.state.loading &&
                         <div>
                           {this.state.users.map(user =>
-                            <p key={user.participantId}><button class="btn btn-light" onClick={() => this.handleClick(user)}>Edit</button>  {user.participantName}</p>
+                            <p><button className="btn btn-link" key={user.participantId} onClick={() => this.handleClick(user)}>{ user.participantName } - { user.username }</button></p>
                           )}
                         </div>
                     }
@@ -134,7 +133,9 @@ export class Admin extends Component {
                 <div className="col-md-6">
                   {this.state.editing &&
                     <div>
-                          <p>{this.state.editParticipantName}</p>
+                          <p>Name: {this.state.editParticipantName}</p>
+                          <p>Username: {this.state.editParticipantUsername}</p>
+                          <p>Team: {this.state.editParticipantTeamName}</p>
                           <br />
                         <form style={formStyle} onSubmit={this.handleSubmit} key="edit">
                           <label>
@@ -144,7 +145,13 @@ export class Admin extends Component {
                           <input type="text" type="password" value={this.state.editParticipantPassword} onChange={this.handleChangePassword} />
                           <br />
                           <br />
-                          <input type="submit" disabled={this.state.error} value="Submit" />
+                          <label>
+                            Admin Access
+                          </label>
+                          <input type="checkbox" checked={this.state.editParticipantAdmin} style={{ marginLeft: "8px"}} onChange={this.handleChangeAdmin} />
+                          <br />
+                          <br />
+                          <input type="submit" disabled={this.state.error} value="Save" />
                         </form>
                         {this.state.error &&
                           <p style={errorStyle}>{this.state.error}</p>

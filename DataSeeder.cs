@@ -88,8 +88,10 @@ namespace StepChallenge
 
         public async Task SetupRoles()
         {
+            // TODO - this is now duplicated in the participants servive and should use that faunction
              var user = new IdentityUser {UserName = "Admin"};
              await _userManager.CreateAsync(user, "AdminPassword1!");
+
              await _userManager.AddClaimAsync(user, new Claim("role", "Admin"));
 
              var adminRole = await _roleManager.FindByNameAsync("Admin");
