@@ -79,43 +79,37 @@ namespace StepChallenge.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> OnPostEditUser([FromBody] EditUserModel model)
         {
-            var user = _stepContext.Participants
+            var user = await _stepContext.Participants
                 .Where(u => u.ParticipantId == model.ParticipantId)
                 .Include(u => u.IdentityUser)
-                .SingleOrDefault();
+                .SingleOrDefaultAsync();
 
             if (user == null)
             {
                 return BadRequest("No user found");
             }
 
-            user.IdentityUser.Email = model.Email;
-            user.IdentityUser.NormalizedUserName = model.ParticipantName;
-
-            await _userManager.UpdateAsync(user.IdentityUser);
-            await _userManager.RemovePasswordAsync(user.IdentityUser);
-            var result = await _userManager.AddPasswordAsync(user.IdentityUser, model.Password);
-
-            var errors = "";
-            foreach (var error in result.Errors)
+            if (!string.IsNullOrEmpty(model.Password))
             {
-                errors = errors + " " + error.Description;
+                await _userManager.RemovePasswordAsync(user.IdentityUser);
+                var passwordResult = await _userManager.AddPasswordAsync(user.IdentityUser, model.Password);
+                if (passwordResult.Errors.Any())
+                {
+                    var err = new Dictionary<string, string> {{"error", passwordResult.Errors.First().Description}};
+                    return new BadRequestObjectResult(err);
+                }
             }
 
-            _logger.LogInformation($"Admin changed {user.ParticipantName} password");
-
-            user.ParticipantName = model.ParticipantName;
-            await _stepContext.SaveChangesAsync();
-
-            if (!string.IsNullOrEmpty(errors))
+            var result = await _userManager.UpdateAsync(user.IdentityUser);
+            if (result.Errors.Any())
             {
-                var err = new Dictionary<string, string>();
-                err.Add("error", errors);
+                var err = new Dictionary<string, string> {{"error", result.Errors.First().Description}};
                 return new BadRequestObjectResult(err);
             }
 
-            var response = new Dictionary<string, string>();
-            response.Add("success", "User updated");
+            _logger.LogInformation($"Admin reset {user.ParticipantName} password ");
+
+            var response = new Dictionary<string, string> {{"success", "User updated"}};
             return new OkObjectResult(response);
         }
 

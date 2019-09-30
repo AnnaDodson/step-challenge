@@ -134,13 +134,9 @@ export class Admin extends Component {
                 <div className="col-md-6">
                   {this.state.editing &&
                     <div>
+                          <p>{this.state.editParticipantName}</p>
+                          <br />
                         <form style={formStyle} onSubmit={this.handleSubmit} key="edit">
-                          <label>
-                            Edit Name
-                          </label>
-                          <br />
-                          <input type="text" value={this.state.editParticipantName} onChange={this.handleChangeName} />
-                          <br />
                           <label>
                             Reset Password
                           </label>
