@@ -156,7 +156,6 @@ export class Register extends Component {
   }
 
   handleChangeTeam(event) {
-    debugger;
     this.setState({error: null});
     this.setState({team: event.target.value});
     if(this.state.password !== this.state.passwordConfirm)

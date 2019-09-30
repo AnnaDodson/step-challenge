@@ -82,9 +82,9 @@ export class Login extends Component {
     var self = this;
     event.preventDefault();
     userLogin(this.state.username, this.state.password)
-      .then(function(error){
-        if(error){
-          self.setState({error: error.error ? error.error : "Something went wrong"});
+      .then(function(response){
+        if(response.error){
+          self.setState({error: response.error ? response.error : "Something went wrong"});
         }
         else{
           //self.props.history.push('/')

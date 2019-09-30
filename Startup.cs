@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Net;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using GraphiQl;
 using GraphQL;
+using GraphQL.Authorization;
 using GraphQL.Types;
+using GraphQL.Validation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -13,6 +16,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Model.GraphQL;
+using StepChallenge.Controllers;
 using StepChallenge.Mutation;
 using StepChallenge.Query;
 using StepChallenge.Services;
@@ -42,6 +46,7 @@ namespace StepChallenge
             services.AddTransient<UserService>();
             services.AddTransient<TeamService>();
             services.AddSingleton<ParticipantType>();
+            services.AddSingleton<UserType>();
             services.AddSingleton<TeamType>();
             services.AddSingleton<StepsType>();
             services.AddSingleton<StepInputType>();
@@ -49,9 +54,10 @@ namespace StepChallenge
             services.AddSingleton<TeamScoreType>();
             services.AddSingleton<StepChallengeMutation>();
             services.AddSingleton<StepChallengeQuery>();
+            services.AddSingleton<StepChallengeQuery>();
             var sp = services.BuildServiceProvider();
             services.AddSingleton<ISchema>(new StepSchema(new FuncDependencyResolver(type => sp.GetService(type))));
-            
+
             services.AddDistributedMemoryCache();
             services.AddSession(options =>
             {
@@ -61,12 +67,12 @@ namespace StepChallenge
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
             });
-            
+
             services.AddIdentity<IdentityUser, IdentityRole>(options => options.Stores.MaxLengthForKeys = 128)
                 .AddEntityFrameworkStores<StepContext>()
                 //.AddDefaultUI()
                 .AddDefaultTokenProviders();
-            
+
             services.AddMvc()
                     .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
                     .AddSessionStateTempDataProvider();
@@ -107,6 +113,17 @@ namespace StepChallenge
                     return Task.CompletedTask;
                 };
             });
+            
+            services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.TryAddSingleton<IAuthorizationEvaluator, AuthorizationEvaluator>();
+            services.AddTransient<IValidationRule, AuthorizationValidationRule>();
+            
+            services.TryAddSingleton(s =>
+            {
+                var authSettings = new AuthorizationSettings();
+                authSettings.AddPolicy("AdminPolicy", _ => _.RequireClaim("Role", "Admin"));
+                return authSettings;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -117,6 +134,9 @@ namespace StepChallenge
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseSession();
+            app.UseCookiePolicy();
+            app.UseAuthentication();
             app.UseGraphiQl("/graphql");
             app.UseHttpsRedirection();
             app.UseStaticFiles();
@@ -127,13 +147,13 @@ namespace StepChallenge
                 var db = serviceScope.ServiceProvider.GetService<StepContext>();
                 db.Database.Migrate();
                 var ideManager = serviceScope.ServiceProvider.GetService<UserManager<IdentityUser>>();
-                var dataSeed = new DataSeed(ideManager);
+                var roleManager = serviceScope.ServiceProvider.GetService<RoleManager<IdentityRole>>();
+                var dataSeed = new DataSeed(ideManager, roleManager);
                 await dataSeed.Run(db);
+
+                await dataSeed.SetupRoles();
+
             }
-            
-            app.UseSession();
-            app.UseCookiePolicy();
-            app.UseAuthentication();
 
             app.UseMvc(routes =>
             {
@@ -154,4 +174,5 @@ namespace StepChallenge
             });
         }
     }
+
 }
