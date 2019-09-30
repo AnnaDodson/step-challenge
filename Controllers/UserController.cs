@@ -100,6 +100,22 @@ namespace StepChallenge.Controllers
                 }
             }
 
+            if (model.isAdmin != user.IsAdmin)
+            {
+                if (model.isAdmin)
+                {
+                    await _userService.AddAdminAccess(user);
+                }
+
+                if (!model.isAdmin)
+                {
+                    await _userService.RemoveAdminAccess(user);
+                }
+
+                user.IsAdmin = model.isAdmin;
+                await _stepContext.SaveChangesAsync();
+            }
+
             var result = await _userManager.UpdateAsync(user.IdentityUser);
             if (result.Errors.Any())
             {
