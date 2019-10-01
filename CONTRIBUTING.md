@@ -5,13 +5,9 @@ Please contribute!
 If this is your first time, follow the steps listed below. Or if you're familiar with the process, TLDR: Fork the repository, commit your changes then raise a PR! If you're closing an issue, mention the issue number in the branch name and PR.
 
 ## Contents
-1. [Code Contributions Through Git](#code-contributions-through-git)
    1. [Fork and Clone the Repo](#fork-and-clone-the-repo)
-   2. [Adding a Blog Post](#adding-a-blog-post)
    2. [Raising Your Pull Request](#raising-your-pull-request)
 
-
-## Code Contributions Through Git
 
 ## Fork and Clone the Repo
 
@@ -46,9 +42,9 @@ This means if there are any changes to the main branch you can get them by runni
 ``` 
 $ git fetch upstream
 
-$ git checkout master
+$ git checkout develop
 
-$ git merge upstream/master
+$ git merge upstream/develop
 
  ```
 
@@ -69,3 +65,55 @@ $ git checkout -b bugfix/fix-annas-janky-code
 ```
 
 Woohoo, you're all ready! Follow the instructions in the README to get the site up and running locally.
+
+## Raising Your Pull Request
+
+Once you've created your blog post, fixed an issue or added a feature it's time to commit your changes and raise a pull request.
+
+To make a commit, first check what files you've changed or added:
+
+```
+$ git status
+```
+
+You'll see all the files you've either edited or added.
+
+Before committing, it's always good to check you're on the right branch.
+
+```
+$ git branch
+```
+
+If you want to switch branch:
+
+```
+$ git checkout <branch-name>
+```
+
+Add `-b` after `checkout` if you want to make a new branch. Then to commit the files you want, add them by running:
+
+```
+$ git add <files that needing adding>
+
+// or to add them all, you can run this
+
+$ git add .
+```
+
+Then commit:
+```
+$ git commit -m "Adding <descrption here>"
+```
+
+You can enter any other details that you think are necessary too.
+
+Once you've committed, you push!
+```
+$ git push origin <your-branch-name>
+```
+
+Also see [here](https://help.github.com/articles/adding-a-file-to-a-repository-using-the-command-line/) for more information.
+
+If you go over to GitHub in your browser, you should see a flag appear in your fork about raising a PR - click that and follow the instructions. Don't forget to add a good message explaining what you have done in your merge. [More details here](https://help.github.com/articles/creating-a-pull-request/)
+
+If at any point you're confused or lost, speak up and get in touch!! You can respond to an issue if you're working on one or email me, tweet me or find me on slack. Don't give up or keep quiet, I want to help.
