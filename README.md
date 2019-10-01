@@ -83,12 +83,6 @@ Create the Container:
 # docker create --name=stepchallenge -v stepchallenge-db:/app/db -p 80:80 --restart=unless-stopped stepchallenge
 ```
 
-Copy in the blank database (first run only):
-
-```
-# docker cp <path to StepChallenge.db> stepchallenge:/app/db
-```
-
 Start the container:
 
 ```
