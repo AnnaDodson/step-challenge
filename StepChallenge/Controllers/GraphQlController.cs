@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Model.GraphQL;
 using IAuthorizationEvaluator = GraphQL.Authorization.IAuthorizationEvaluator;
 
@@ -21,6 +22,7 @@ namespace StepChallenge.Controllers
    {
       private readonly StepContext _db;
       private readonly ISchema _schema;
+      private readonly ILogger<RegisterController> _logger;
       private readonly UserManager<IdentityUser> _userManager;
       private readonly IHttpContextAccessor _httpContextAccessor;
       private readonly IAuthorizationEvaluator _authorizationEvaluator;
@@ -28,6 +30,7 @@ namespace StepChallenge.Controllers
       public GraphQlController(
          StepContext db,
          ISchema schema,
+         ILogger<RegisterController> logger,
          UserManager<IdentityUser> userManager,
          IHttpContextAccessor httpContextAccessor,
          IAuthorizationEvaluator authorizationEvaluator
@@ -35,6 +38,7 @@ namespace StepChallenge.Controllers
       {
          _db = db;
          _schema = schema;
+         _logger = logger;
          _userManager = userManager;
          _httpContextAccessor = httpContextAccessor;
          _authorizationEvaluator = authorizationEvaluator;
@@ -53,11 +57,18 @@ namespace StepChallenge.Controllers
          {
             var user = await _userManager.GetUserAsync(User);
 
+            if (user == null)
+            {
+               _logger.LogInformation($"Query failed - no valid user");
+               return BadRequest("Not a valid user");
+            }
+
             var participant = await _db.Participants
                .FirstOrDefaultAsync(p => p.IdentityUser.Id == user.Id);
 
             if (participant == null)
             {
+               _logger.LogInformation($"Query failed - no valid participant {user.UserName}");
                return BadRequest("Not a valid participant");
             }
             
@@ -73,6 +84,7 @@ namespace StepChallenge.Controllers
 
             if (participant == null)
             {
+               _logger.LogInformation($"Query failed - no valid participant {user.UserName}");
                return BadRequest("Not a valid participant");
             }
             
@@ -107,6 +119,7 @@ namespace StepChallenge.Controllers
             {
                msg = msg + " " + err.Message;
             }
+            _logger.LogInformation($"Query failed: {msg}");
             return BadRequest(result.Errors.Select(e => e.Message));
          }
 

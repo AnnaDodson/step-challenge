@@ -4,12 +4,12 @@ Built for a company step challenge competition. In beta.
 
 ## Contents
    1. [Tech stack](#tech-stack)
-   2. [Requirements](#requirements)
-   3. [To Run Locally](#to-run-locally)
-   4. [To Build the App](#to-build-the-app)
-   5. [To Build and Run in Docker](#to-build-and-run-in-docker)
-   6. [Contributing](#contributing)
-   7. [License](#license)
+   2. [Contributing](#contributing)
+   3. [License](#license)
+   4. [Requirements](#requirements)
+   5. [To Run Locally](#to-run-locally)
+   6. [To Build the App](#to-build-the-app)
+   7. [To Build and Run in Docker](#to-build-and-run-in-docker)
 
 ## Tech stack
 
@@ -19,6 +19,18 @@ Built for a company step challenge competition. In beta.
 - Entity Framework Core
 - SQLite
 - React
+
+## Contributing
+
+Check out the [contributing guide](/contributing.md) for instructions on how to contribute to this project.
+
+## License
+
+This app is licensed as the GNU Affero General Public License v3.0.
+
+Check you're happy with this before contributing or using the source code.
+
+[tldrlegal.com/license/gnu-affero-general-public-license-v3-(agpl-3.0)](https://tldrlegal.com/license/gnu-affero-general-public-license-v3-(agpl-3.0))
 
 ## Requirements
 
@@ -80,7 +92,7 @@ $ dotnet publish
 Build the docker image:
 
 ```
-$ git clone https://github.com/powercrazed/step-challenge.git
+$ git clone https://github.com/AnnaDodson/step-challenge.git
 $ cd step-challenge
 $ git checkout docker
 # docker build -t stepchallenge .
@@ -104,14 +116,16 @@ Start the container:
 # docker start stepchallenge
 ```
 
-## Contributing
+### Running locally in docker
 
-Check out the [contributing guide](/contributing.md) for instructions on how to contribute to this project.
+To run docker locally, you'll need to set up local certs for the ASP identity to work. See [documentation](https://github.com/dotnet/dotnet-docker/blob/master/samples/aspnetapp/aspnetcore-docker-https.md) here.
 
-## License
+To create the container:
 
-This app is licesned as the GNU Affero General Public License v3.0.
+```
+docker create --rm -it -p 8000:80 -p 8001:443 -e ASPNETCORE_URLS="https://+;http://+" -e ASPNETCORE_HTTPS_PORT=8001 -e ASPNETCORE_Kestrel__Certificates__Default__Password="crypticpassword" -e ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx -v ${HOME}/.aspnet/https:/https/ -v stepchallenge-db:/app/db --name=stepchallenge stepchallenge
+```
 
-Check you're happy with this before contributing or using the source code.
+Then navigate to [https://localhost:8001](https://localhost:8001)
 
-[tldrlegal.com/license/gnu-affero-general-public-license-v3-(agpl-3.0)](https://tldrlegal.com/license/gnu-affero-general-public-license-v3-(agpl-3.0))
+Happy Stepping!
