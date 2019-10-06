@@ -50,11 +50,13 @@ namespace StepChallenge.Controllers
             var result = await _signInManager.PasswordSignInAsync(inputModel.Username, inputModel.Password, false, lockoutOnFailure: true);
             if (!result.Succeeded)
             {
+                _logger.LogInformation($"Failed login attempt for: {inputModel.Username}");
                  var err = new Dictionary<string, string>()
                      {{"error", "Incorrect username or password. Try again"}};
                  return new BadRequestObjectResult(err);
             }
             
+            _logger.LogInformation($"User Successfully logged in: {inputModel.Username}");
             var response = new Dictionary<string, string>();
             response.Add("success", "User logged in");
             return new OkObjectResult(response);
@@ -67,6 +69,7 @@ namespace StepChallenge.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> OnPostLogOut(InputModel mode)
         {
+            _logger.LogInformation($"User Successfully logged in: {mode.Username}");
             await _signInManager.SignOutAsync();
             return new OkResult();
         }

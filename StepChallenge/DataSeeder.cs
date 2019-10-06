@@ -32,7 +32,6 @@ namespace StepChallenge
                     {
                         TeamId = 1,
                         TeamName = "Team_1",
-                        /*
                         Participants = new[]
                         {
                             
@@ -52,13 +51,11 @@ namespace StepChallenge
                                 Steps = GetSteps()
                             }
                         }
-                        */
                     },
                     new Team
                     {
                         TeamId = 2,
                         TeamName = "Team_2",
-                        /*
                         Participants = new[]
                         {
                             new Participant
@@ -76,7 +73,6 @@ namespace StepChallenge
                                 Steps = GetSteps()
                             }
                         }
-                        */
                     }
                 };
                 
