@@ -42,6 +42,7 @@ export class EditTeams extends Component {
         numberOfParticipants: 0,
         teamId : 0,
         error : false,
+        saved : false,
     }
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleChangeTeam = this.handleChangeTeam.bind(this);
@@ -66,22 +67,23 @@ export class EditTeams extends Component {
   }
 
   handleChangeTeam(event) {
-    this.setState({ showTeam : false })
+    this.setState({ showTeam : false, saved : false })
     var selectedTeamId = event.target.value
     var selectedTeam =_.find(this.state.teams, function(team){ return team.teamId == selectedTeamId; }); 
-    this.setState({team: selectedTeam});
-    this.setState({teamName: selectedTeam.teamName});
-    this.setState({teamId: selectedTeam.teamId});
-    this.setState({numberOfParticipants: selectedTeam.numberOfParticipants});
-    this.setState({ showTeam : true })
+    this.setState({
+      team: selectedTeam,
+      teamName: selectedTeam.teamName,
+      teamId: selectedTeam.teamId,
+      numberOfParticipants: selectedTeam.numberOfParticipants,
+      showTeam : true})
   }
 
   handleChangeName(event){
-    this.setState({teamName: event.target.value});
+    this.setState({teamName: event.target.value, saved: false});
   }
 
   handleChangeNumberOfParticipants(event){
-    this.setState({numberOfParticipants: event.target.value});
+    this.setState({numberOfParticipants: event.target.value, saved : false});
   }
 
   handleSubmit(event){
@@ -93,8 +95,14 @@ export class EditTeams extends Component {
         numberOfParticipants : this.state.numberOfParticipants
     }
     updateTeam(updated).then(data => {
-        this.setState({numberOfParticipants: data.numberOfParticipants});
-        this.setState({teamName: data.teamName});
+        var findTeam =_.find(this.state.teams, function(team){ return team.teamId == updated.teamId }); 
+        findTeam.numberOfParticipants = data.numberOfParticipants
+        findTeam.teamName = data.teamName
+        this.setState({
+          numberOfParticipants: data.numberOfParticipants,
+          teamName: data.teamName,
+          saved : true
+        });
     })
 
   }
@@ -114,8 +122,8 @@ export class EditTeams extends Component {
                     Teams
                     </label>
                     <br />
-                    <select key={"teams"} value={this.state.team} onChange={this.handleChangeTeam}>
-                      <option value='0' disabled>Choose a team</option>
+                    <select key={"teams"} style={{"width": "60%"}} value={this.state.team} onChange={this.handleChangeTeam}>
+                      <option value='0' disabled selected>Choose a team</option>
                       {this.state.teams.map(team =>
                         <option key={team.teamId} value={team.teamId}>{ team.teamName }</option>
                       )}
@@ -126,12 +134,12 @@ export class EditTeams extends Component {
           {this.state.showTeam &&
             <div class="col-md-6">
               <form style={formStyle} onSubmit={this.handleSubmit} key="edit">
-                <label>Team Name</label>
+                <label><strong>Team Name:</strong></label>
                 <br />
                 <input type="text" value={this.state.teamName} onChange={this.handleChangeName} />
                 <br />
                 <br />
-                <label>Number of Participants</label>
+                <label><strong>Number of Participants:</strong></label>
                 <br />
                 <select key={"numberOfParticipants"} value={this.state.numberOfParticipants} onChange={this.handleChangeNumberOfParticipants}>
                     <option key={0} value={0}>0</option>
@@ -148,7 +156,17 @@ export class EditTeams extends Component {
                 </select>
                 <br />
                 <br />
-                <input type="submit" disabled={this.state.error} value="Save" />
+                <p><strong>Participants:</strong></p>
+                <ol>
+                  {this.state.team.participants.map(participant =>
+                      <li>{participant.participantName}</li>
+                  )}
+                </ol>
+                <br />
+                <input className="btn btn-success" type="submit" disabled={this.state.error} value="Save" />
+                {this.state.saved &&
+                <p style={{"color":"green"}}>Saved</p>
+                }
               </form>
           </div>
           }
