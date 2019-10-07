@@ -125,7 +125,7 @@ export class EditParticipant extends Component {
                           Participants
                           </label>
                           <br />
-                          <select key={"users"} value={this.state.user} onChange={this.handleClick}>
+                          <select key={"users"} style={{"width": "60%"}} value={this.state.user} onChange={this.handleClick}>
                             <option value='0' disabled>select a participant</option>
                             {this.state.users.map(user =>
                               <option key={user.participantId} value={user.participantId}>{ user.participantName }</option>
@@ -155,7 +155,7 @@ export class EditParticipant extends Component {
                           <input type="checkbox" checked={this.state.editParticipantAdmin} style={{ marginLeft: "8px"}} onChange={this.handleChangeAdmin} />
                           <br />
                           <br />
-                          <input type="submit" disabled={this.state.error} value="Save" />
+                          <input type="submit" className="btn btn-success" disabled={this.state.error} value="Save" />
                         </form>
                         {this.state.error &&
                           <p style={errorStyle}>{this.state.error}</p>

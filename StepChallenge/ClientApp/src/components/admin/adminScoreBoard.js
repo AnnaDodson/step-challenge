@@ -41,7 +41,7 @@ export class AdminScoreBoard extends Component {
         return(
         <div>
           <h4>Updated every Monday<span style={{ fontStyle: "italic", fontSize: "16px" }}> Any new steps added for previous weeks will be included</span> </h4>
-          <table className='table table-striped' style={{ textAlign : "center", fontSize: "24px" }} >
+          <table className='table table-striped' style={{ textAlign : "center", fontSize: "14px" }} >
             <thead>
               <tr>
                 <th colSpan="2" >Teams Step Counts until { dateOfScores }</th>
