@@ -1,3 +1,4 @@
+using GraphQL.Authorization;
 using GraphQL.Types;
 using StepChallenge.DataModels;
 
@@ -14,6 +15,15 @@ namespace Model.GraphQL
                 .Description("The date the scores are taken until");
 
         }
-        
+    }
+
+    public class AdminLeaderBoardType : LeaderBoardType
+    {
+        public AdminLeaderBoardType()
+        {
+            Name = "AdminLeaderBoard";
+
+            this.AuthorizeWith("AdminPolicy");
+        }
     }
 }

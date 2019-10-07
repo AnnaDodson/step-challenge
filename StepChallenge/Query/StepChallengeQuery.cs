@@ -110,22 +110,23 @@ namespace StepChallenge.Query
                 resolve: context =>
                 {
                     var leaderBoard = new LeaderBoard();
+                    var settings = db.ChallengeSettings
+                        .FirstOrDefault();
 
-                    DateTime thisWeek = DateTime.Now;
-                    DateTime thisMonday = stepsService.StartOfWeek(thisWeek, DayOfWeek.Monday);
+                    if (settings == null || !settings.ShowLeaderBoard)
+                    {
+                        leaderBoard.TeamScores = new List<TeamScores>();
+                        return leaderBoard;
+                    }
 
-                    leaderBoard.DateOfLeaderboard = thisMonday;
+                    var teams = db.Team;
+                    leaderBoard = stepsService.GetLeaderBoard(teams);
 
-                    var sortedTeams = db.Team
-                        .Where(t => t.Participants.Any(p => p.Steps.Any(s => s.DateOfSteps > startDate && s.DateOfSteps < thisMonday ))
-                            || t.Participants.All(p => p.Steps.All(s => s.StepCount == 0)))
-                        .OrderByDescending(t => t.Participants.Sum(u => u.Steps.Sum(s => s.StepCount)))
-                        .ToList();
-
-                    var teamSteps = sortedTeams.Select(t => new TeamScores
+                    var teamSteps = leaderBoard.TeamScores.Select(t => new TeamScores
                     {
                         TeamId = t.TeamId,
-                        TeamName = t.TeamName
+                        TeamName = t.TeamName,
+                        TeamStepCount = settings.ShowLeaderBoardStepCounts ? t.TeamStepCount : 0
                     }).ToList();
 
                     leaderBoard.TeamScores = teamSteps;
@@ -133,7 +134,29 @@ namespace StepChallenge.Query
                     return leaderBoard;
                 });
 
+            Field<AdminLeaderBoardType>(
+                "AdminLeaderBoard",
+                resolve: context =>
+                {
+                    var teams = db.Team;
+
+                    var leaderBoard = stepsService.GetLeaderBoard(teams);
+                
+                    return leaderBoard;
+                });
+
+            Field<ChallengeSettingsType>(
+                "ChallengeSettings",
+                resolve: context =>
+                {
+                    var settings = db.ChallengeSettings
+                        .FirstOrDefault();
+
+                    return settings;
+                });
+
 
         }
+
     }
 }

@@ -55,6 +55,10 @@ namespace StepChallenge
             services.AddSingleton<StepChallengeMutation>();
             services.AddSingleton<StepChallengeQuery>();
             services.AddSingleton<StepChallengeQuery>();
+            services.AddSingleton<ChallengeSettingsType>();
+            services.AddSingleton<ChallengeSettingsInputType>();
+            services.AddSingleton<TeamInputType>();
+            services.AddSingleton<AdminLeaderBoardType>();
             var sp = services.BuildServiceProvider();
             services.AddSingleton<ISchema>(new StepSchema(new FuncDependencyResolver(type => sp.GetService(type))));
 
@@ -63,7 +67,7 @@ namespace StepChallenge
             {
                 options.Cookie.Name = ".StepChallenge.Session";
                 // Set a short timeout for easy testing
-                options.IdleTimeout = TimeSpan.FromSeconds(10);
+                options.IdleTimeout = TimeSpan.FromDays(10);
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
             });
@@ -88,7 +92,7 @@ namespace StepChallenge
                         options.Password.RequiredUniqueChars = 1;
 
                 // Lockout settings.
-                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromDays(5);
                         options.Lockout.MaxFailedAccessAttempts = 5;
                         options.Lockout.AllowedForNewUsers = true;
 

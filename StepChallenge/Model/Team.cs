@@ -7,6 +7,8 @@ namespace Model
         public int TeamId { get; set; }
         public string TeamName { get; set; }
 
+        public int NumberOfParticipants { get; set; }
+
         public ICollection<Participant> Participants { get; set; }
     }
 }

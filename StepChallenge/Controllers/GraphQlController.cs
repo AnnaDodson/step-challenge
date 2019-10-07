@@ -52,17 +52,15 @@ namespace StepChallenge.Controllers
          }
          
          var inputs = graphQuery.Variables.ToInputs();
+         var user = await _userManager.GetUserAsync(User);
+         if (user == null)
+         {
+            _logger.LogInformation($"Query failed - no valid user");
+            return BadRequest("Not a valid user");
+         }
          
          if (inputs.ContainsKey("participantId"))
          {
-            var user = await _userManager.GetUserAsync(User);
-
-            if (user == null)
-            {
-               _logger.LogInformation($"Query failed - no valid user");
-               return BadRequest("Not a valid user");
-            }
-
             var participant = await _db.Participants
                .FirstOrDefaultAsync(p => p.IdentityUser.Id == user.Id);
 
@@ -77,8 +75,6 @@ namespace StepChallenge.Controllers
 
          if (inputs.ContainsKey("teamId"))
          {
-            var user = await _userManager.GetUserAsync(User);
-
             var participant = await _db.Participants
                .FirstOrDefaultAsync(p => p.IdentityUser.Id == user.Id);
 
@@ -87,9 +83,7 @@ namespace StepChallenge.Controllers
                _logger.LogInformation($"Query failed - no valid participant {user.UserName}");
                return BadRequest("Not a valid participant");
             }
-            
             inputs["teamId"] = participant.TeamId.ToString();
-            
          }
 
          var context = _httpContextAccessor.HttpContext;

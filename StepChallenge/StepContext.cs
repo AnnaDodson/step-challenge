@@ -11,6 +11,8 @@ namespace StepChallenge
         public DbSet<Participant> Participants { get; set; }
         public DbSet<Steps> Steps { get; set; }
 
+        public DbSet<ChallengeSettings> ChallengeSettings { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlite("Data Source=db/StepChallenge.db");
