@@ -101,6 +101,51 @@ namespace StepChallenge.Services
             return days;
         }
 
+        public LeaderBoard GetLeaderBoard(IQueryable<Team> teams)
+        {
+            var thisMonday = StartOfWeek(DateTime.Now, DayOfWeek.Monday);
+
+            var leaderBoard = new LeaderBoard
+            {
+                DateOfLeaderboard = thisMonday,
+                TeamScores = GetTeamScores(teams, thisMonday, _startDate, GetTeamSize())
+            };
+
+            return leaderBoard;
+        }
+
+        public List<TeamScores> GetTeamScores(IQueryable<Team> teams, DateTime thisMonday, DateTime startDate, int averageTeamSize)
+        {
+            var sortedTeams = teams
+                .Select(t => new TeamScores
+                {
+                    TeamId = t.TeamId,
+                    TeamName = t.TeamName,
+                    NumberOfParticipants = t.NumberOfParticipants, //TODO - need to know how many are in a team, if participants haven't registered yet then we can't rely on counting all participants
+                    TeamStepCount = t.Participants.Sum(p => p.Steps
+                        .Where(s => s.DateOfSteps >= startDate && s.DateOfSteps < thisMonday
+                                    || t.Participants.All(u => u.Steps.All(x => x.StepCount == 0)))
+                        .Sum(s => s.StepCount))
+                })
+                .ToList();
+
+            foreach (var teamScore in sortedTeams.Where(t => t.NumberOfParticipants != averageTeamSize && t.NumberOfParticipants != 0))
+            {
+                teamScore.TeamStepCount = ((teamScore.TeamStepCount / teamScore.NumberOfParticipants) *
+                                           (averageTeamSize - teamScore.NumberOfParticipants)) +
+                                          teamScore.TeamStepCount;
+            }
+
+            return sortedTeams.OrderByDescending(t => t.TeamStepCount).ToList();
+        }
+
+        private int GetTeamSize()
+        {
+            // average number of people in a team
+            // this should be saved in the db as part of the challenge set up data
+            return 6;
+        }
+
         public DateTime StartOfWeek(DateTime dt, DayOfWeek startOfWeek)
         {
             int diff = (7 + (dt.DayOfWeek - startOfWeek)) % 7;

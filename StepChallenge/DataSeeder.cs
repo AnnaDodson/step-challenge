@@ -24,6 +24,24 @@ namespace StepChallenge
         
         public async Task Run(StepContext db)
         {
+            // TODO setting default settings here but if none exist, user should enter them on creating a new challenge. Only create defaults for development
+            if (!db.ChallengeSettings.Any())
+            {
+                var settings = new ChallengeSettings
+                {
+                    Name = "Step Challenge 2019",
+                    StartDate = new DateTime(2019, 09, 16, 0, 0, 0),
+                    EndDate = new DateTime(2019, 12, 02, 0, 0, 0),
+                    DurationInWeeks = 10,
+                    ShowLeaderBoard = false,
+                    ShowLeaderBoardStepCounts = false,
+                    NumberOfParticipants = 48,
+                    NumberOfParticipantsInATeam = 6,
+                };
+
+                db.ChallengeSettings.Add(settings);
+                db.SaveChanges();
+            }
             if (!db.Team.Any())
             {
                 var teams = new List<Team>

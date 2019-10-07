@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using StepChallenge;
 
 namespace StepChallenge.Migrations
 {
     [DbContext(typeof(StepContext))]
-    partial class StepContextModelSnapshot : ModelSnapshot
+    [Migration("20191006100545_NewColumn_NumberOfParticipants")]
+    partial class NewColumn_NumberOfParticipants
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -171,32 +173,6 @@ namespace StepChallenge.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens");
-                });
-
-            modelBuilder.Entity("Model.ChallengeSettings", b =>
-                {
-                    b.Property<int>("ChallengeSettingsId")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<int>("DurationInWeeks");
-
-                    b.Property<DateTimeOffset>("EndDate");
-
-                    b.Property<string>("Name");
-
-                    b.Property<int>("NumberOfParticipants");
-
-                    b.Property<int>("NumberOfParticipantsInATeam");
-
-                    b.Property<bool>("ShowLeaderBoard");
-
-                    b.Property<bool>("ShowLeaderBoardStepCounts");
-
-                    b.Property<DateTimeOffset>("StartDate");
-
-                    b.HasKey("ChallengeSettingsId");
-
-                    b.ToTable("ChallengeSettings");
                 });
 
             modelBuilder.Entity("Model.Participant", b =>

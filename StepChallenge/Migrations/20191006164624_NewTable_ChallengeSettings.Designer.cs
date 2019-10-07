@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using StepChallenge;
 
 namespace StepChallenge.Migrations
 {
     [DbContext(typeof(StepContext))]
-    partial class StepContextModelSnapshot : ModelSnapshot
+    [Migration("20191006164624_NewTable_ChallengeSettings")]
+    partial class NewTable_ChallengeSettings
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

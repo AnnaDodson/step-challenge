@@ -35,6 +35,49 @@ namespace StepChallenge.Mutation
                     
                     return stepsService.Create(steps);
                 });
+            
+            Field<ChallengeSettingsType>(
+                "updateChallengeSettings",
+                arguments:  new QueryArguments(
+                                new QueryArgument<NonNullGraphType<ChallengeSettingsInputType>> {Name = "settings" }),
+                resolve: context =>
+                {
+                    var newSettings = context.GetArgument<ChallengeSettingsInput>("settings");
+
+                    var existingSettings = db.ChallengeSettings
+                        .FirstOrDefault();
+
+                    if (existingSettings != null)
+                    {
+                        existingSettings.ShowLeaderBoard = newSettings.ShowLeaderBoard;
+                        existingSettings.ShowLeaderBoardStepCounts = newSettings.ShowLeaderBoardStepCounts;
+                    }
+
+                    db.SaveChanges();
+                    
+                    return existingSettings;
+                });
+            
+            Field<TeamType>(
+                "updateTeam",
+                arguments:  new QueryArguments(
+                                new QueryArgument<NonNullGraphType<TeamInputType>> {Name = "team" }),
+                resolve: context =>
+                {
+                    var newTeamInfo = context.GetArgument<TeamInput>("team");
+
+                    var team = db.Team
+                        .FirstOrDefault(t => t.TeamId == newTeamInfo.TeamId);
+
+                    if (team != null)
+                    {
+                        team.TeamName = newTeamInfo.TeamName;
+                        team.NumberOfParticipants = newTeamInfo.NumberOfParticipants;
+                    }
+                        
+                    db.SaveChanges();
+                    return team;
+                });
         }
     }
 }
