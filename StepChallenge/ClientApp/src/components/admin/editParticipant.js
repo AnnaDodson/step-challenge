@@ -86,20 +86,21 @@ export class EditParticipant extends Component {
   }
 
   handleClick(event) {
+    this.setState({editing: false, success: false, error: null});
     var selectedUserId = event.target.value
     var user =_.find(this.state.users, function(user){ return user.participantId == selectedUserId; }); 
-
-    this.setState({editing: false, success: false});
-    this.setState({error: null, success: null});
-    this.setState({editUser: user});
-    this.setState({editParticipantId: user.participantId});
-    this.setState({editParticipantName: user.participantName});
-    this.setState({editParticipantUsername: user.username});
-    this.setState({editParticipantTeamName: user.team.teamName});
-    this.setState({editParticipantEmail: user.participantEmail});
-    this.setState({editParticipantAdmin: user.isAdmin});
-    this.setState({editParticipantPassword: ""});
-    this.setState({editing: true});
+    if(user){
+      this.setState({editUser: user,
+      editParticipantId: user.participantId,
+      editParticipantName: user.participantName,
+      editParticipantUsername: user.username,
+      editParticipantTeamName: user.team.teamName,
+      editParticipantEmail: user.participantEmail,
+      editParticipantAdmin: user.isAdmin,
+      editParticipantPassword: "",
+      editing: true
+      })
+    }
   }
 
   handleChangePassword(event) {
@@ -126,7 +127,7 @@ export class EditParticipant extends Component {
                           </label>
                           <br />
                           <select key={"users"} style={{"width": "60%"}} value={this.state.user} onChange={this.handleClick}>
-                            <option value='0' disabled>select a participant</option>
+                            <option value='0' defaultValue>select a participant</option>
                             {this.state.users.map(user =>
                               <option key={user.participantId} value={user.participantId}>{ user.participantName }</option>
                             )}

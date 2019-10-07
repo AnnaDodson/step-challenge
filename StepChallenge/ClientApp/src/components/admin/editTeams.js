@@ -36,7 +36,7 @@ export class EditTeams extends Component {
         loading: true,
         error: false,
         teams : [],
-        team : null,
+        team : {},
         showTeam : false,
         teamName : "",
         numberOfParticipants: 0,
@@ -70,12 +70,14 @@ export class EditTeams extends Component {
     this.setState({ showTeam : false, saved : false })
     var selectedTeamId = event.target.value
     var selectedTeam =_.find(this.state.teams, function(team){ return team.teamId == selectedTeamId; }); 
-    this.setState({
-      team: selectedTeam,
-      teamName: selectedTeam.teamName,
-      teamId: selectedTeam.teamId,
-      numberOfParticipants: selectedTeam.numberOfParticipants,
-      showTeam : true})
+    if(selectedTeam){
+      this.setState({
+        team: selectedTeam,
+        teamName: selectedTeam.teamName,
+        teamId: selectedTeam.teamId,
+        numberOfParticipants: selectedTeam.numberOfParticipants,
+        showTeam : true})
+    }
   }
 
   handleChangeName(event){
@@ -114,16 +116,16 @@ export class EditTeams extends Component {
           {this.state.loading &&
             <p><em>Loading...</em></p>
           }
-          <div class="row">
+          <div className="row">
           {display &&
-            <div class="col-md-6">
+            <div className="col-md-6">
                 <div>
                     <label>
                     Teams
                     </label>
                     <br />
                     <select key={"teams"} style={{"width": "60%"}} value={this.state.team} onChange={this.handleChangeTeam}>
-                      <option value='0' disabled selected>Choose a team</option>
+                      <option value='0' defaultValue>Choose a team</option>
                       {this.state.teams.map(team =>
                         <option key={team.teamId} value={team.teamId}>{ team.teamName }</option>
                       )}
@@ -132,7 +134,7 @@ export class EditTeams extends Component {
             </div>
           }
           {this.state.showTeam &&
-            <div class="col-md-6">
+            <div className="col-md-6">
               <form style={formStyle} onSubmit={this.handleSubmit} key="edit">
                 <label><strong>Team Name:</strong></label>
                 <br />
