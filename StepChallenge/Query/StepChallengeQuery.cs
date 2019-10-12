@@ -54,28 +54,39 @@ namespace StepChallenge.Query
                     return participants;
                 });
 
-            Field<ListGraphType<StepsType>>(
+            Field<ListGraphType<TeamScoreBoardType>>(
                 "TeamSteps",
                 arguments: new QueryArguments(
                     new QueryArgument<IdGraphType> {Name = "teamId", Description = "The ID of the Team"}),
                 resolve: context =>
                 {
                     var id = context.GetArgument<int>("teamId");
-                    var team = db.Team
-                        .Include("Participants")
-                        .FirstOrDefault(i => i.TeamId == id);
+                    var participants = db.Participants
+                        .Where(i => i.TeamId == id);
 
                     var teamSteps = db.Steps
-                        .Where(s => team.Participants.Any(t => t.ParticipantId == s.ParticipantId))
-                        .Where(s => s.DateOfSteps >= startDate && s.DateOfSteps < endDate)
+                        .Where(s => participants.Any(t => t.ParticipantId == s.ParticipantId))
                         .GroupBy(s => s.DateOfSteps)
-                        .Select(s => new Steps
+                        .Select(s => new TeamScoreBoard
                         {
                             DateOfSteps = s.First().DateOfSteps,
-                            StepCount = s.Sum(st => st.StepCount)
+                            StepCount = s.Where(st => st.DateOfSteps >= startDate && st.DateOfSteps < endDate)
+                                .Sum(st => st.StepCount),
                         })
                         .OrderBy(s => s.DateOfSteps)
                         .ToList();
+
+                    foreach (var teamStep in teamSteps)
+                    {
+                        teamStep.ParticipantsStepsStatus = participants
+                            .Select(p => new ParticipantsStepsStatus
+                            {
+                                ParticipantName = p.ParticipantName,
+                                ParticipantAddedStepCount = p.Steps.Any(ps => ps.DateOfSteps == teamStep.DateOfSteps)
+                            })
+                            .OrderBy(p => p.ParticipantName)
+                            .ToList();
+                    }
 
                     return teamSteps;
                 });

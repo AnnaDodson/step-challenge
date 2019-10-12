@@ -59,6 +59,8 @@ namespace StepChallenge
             services.AddSingleton<ChallengeSettingsInputType>();
             services.AddSingleton<TeamInputType>();
             services.AddSingleton<AdminLeaderBoardType>();
+            services.AddSingleton<TeamScoreBoardType>();
+            services.AddSingleton<ParticipantStepStatusType>();
             var sp = services.BuildServiceProvider();
             services.AddSingleton<ISchema>(new StepSchema(new FuncDependencyResolver(type => sp.GetService(type))));
 

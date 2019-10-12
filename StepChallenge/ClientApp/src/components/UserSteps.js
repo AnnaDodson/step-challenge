@@ -59,7 +59,7 @@ class UserSteps extends Component {
     return (
         <div>
         <p>{name}</p>
-          < CreateStepTable data={steps} table={"user"} />
+          < CreateStepTable steps={steps} table={"user"} />
         </div>
         )
   }

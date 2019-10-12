@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import * as moment from 'moment';
 import * as _ from 'underscore';
 import UserStep from './UserStep'
+import TeamStep from './TeamStep';
 
 
 function getDaysToDisplay(startDate){
@@ -12,7 +13,7 @@ function getDaysToDisplay(startDate){
     return howManyDaysToShow.diff(startDate, 'days');
 }
 
-function getTable(steps, type){
+function getTable(steps, numberOfParticipants, type){
     // TODO this date should be saved and returned from the db
     var startDate = moment("2019-09-16T02:00:00+01:00");
     var numberOfDaysToDisplay = getDaysToDisplay(startDate);
@@ -33,29 +34,31 @@ function getTable(steps, type){
       }
       var dateOfSteps = moment(startDate).add(i, "day");
       // TODO can probably assume the dates are in the correct order here
-      var stepCount  = _.find(steps, function(step){
+      var stepData  = _.find(steps, function(step){
         return moment(step.dateOfSteps).isSame(dateOfSteps, 'day')
       });
-      if(stepCount){
-        stepCount  = stepCount.stepCount;
-      }
-      else{
-        stepCount = 0;
+      var stepCount = 0;
+      var participantsStatus = []
+      if(stepData){
+        stepCount  = stepData.stepCount
+        participantsStatus = stepData.participantsStepsStatus
       }
       totalCount = totalCount + stepCount;
-
+      var data = {
+        count : stepCount,
+        date : moment(dateOfSteps)
+      }
       if(type === "user"){
-            var data = {
-              count : stepCount,
-              userId : 1,
-              date : moment(dateOfSteps)
-            }
             children.push(<td key={days[i] + '_' + i }>
               <UserStep data={data}/>
             </td>)
       }
-      else{
-          children.push(<td key={'day_' + i}>{stepCount}<br/>{dateOfSteps.format('MMM Do')}</td>)
+      if(type === "team"){
+        data.participantsStatus = participantsStatus
+        data.numberOfParticipants = numberOfParticipants
+        children.push(<td key={days[i] + '_' + i }>
+          <TeamStep data={data}/>
+        </td>)
       }
 
       if(children.length === 8){
@@ -74,16 +77,18 @@ class CreateStepTable extends Component{
     super(props);
     this.state =  {
     }
-    this.steps = props.data;
+    this.steps = props.steps;
+    this.teamNumberOfParticipants = props.numberOfParticipants ? props.numberOfParticipants : 0;
+    this.numberOfParticipants = props.numberOfParticipants;
     this.type = props.table;
   }
 
-  static renderTable (steps, type) {
-      return getTable(steps, type)
+  static renderTable (steps, numberOfParticipants, type) {
+      return getTable(steps, numberOfParticipants, type)
   }
 
   render() {
-    let contents = CreateStepTable.renderTable(this.steps, this.type);
+    let contents = CreateStepTable.renderTable(this.steps, this.numberOfParticipants, this.type);
       return(
           <table className="table">
             <tbody>
