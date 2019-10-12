@@ -1,0 +1,13 @@
+.participants_names:after {
+  content: ", "; }
+
+.participants_names:last-child:after {
+  content: ""; }
+
+.statusInfo {
+  cursor: pointer;
+  width: 16%;
+  height: 10px;
+  background-color: #dee2e6;
+  border: 1px solid #dee2e6;
+  display: inline-block; }

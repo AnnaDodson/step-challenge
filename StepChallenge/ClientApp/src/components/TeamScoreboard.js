@@ -64,7 +64,7 @@ export class TeamScoreboard extends Component {
           <h3>{ teamName }</h3>
           <p>
           {participants.map(participant =>
-            <span>{participant.participantName}, </span>
+            <span className="participants_names">{participant.participantName}</span>
           )}
           </p>
           < CreateStepTable steps={steps} numberOfParticipants={teamNumberOfParticipants} table={"team"} />

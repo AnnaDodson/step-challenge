@@ -79,7 +79,7 @@ class CreateStepTable extends Component{
     }
     this.steps = props.steps;
     this.teamNumberOfParticipants = props.numberOfParticipants ? props.numberOfParticipants : 0;
-    this.numberOfParticipants = props.numberOfParticipants;
+    this.numberOfParticipants = props.numberOfParticipants ? props.numberOfParticipants : 0;
     this.type = props.table;
   }
 
