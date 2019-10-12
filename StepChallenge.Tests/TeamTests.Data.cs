@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Model;
@@ -6,7 +7,7 @@ using NUnit.Framework;
 
 namespace StepChallenge.Tests
 {
-    public class LeaderBoardTestsData
+    public class TestData
     {
         private static DateTime StartDate = new DateTime(2019,09,16, 0,0,0);
         
@@ -18,6 +19,11 @@ namespace StepChallenge.Tests
         public static IQueryable<Team> GetTeams(){
             var teams = CreateThreeTeams();
             return teams;
+        }
+
+        public static Team GetTeam(){
+            var team = CreateTeam();
+            return team;
         }
 
         public static IQueryable<Team> GetTeams_StepsOutsideOfRange(){
@@ -60,6 +66,27 @@ namespace StepChallenge.Tests
 
             return teams;
         }
+        private static Team CreateTeam()
+        {
+            return new Team
+            {
+                TeamId = 1,
+                TeamName = "Team_1",
+                NumberOfParticipants = 3,
+                Participants = GetParticipants_TeamOne()
+            };
+        }
+
+        public static Team CreateTeamForTeamScoreboard()
+        {
+            return new Team
+            {
+                TeamId = 1,
+                TeamName = "Team_1",
+                NumberOfParticipants = 4,
+                Participants = GetParticipants_ForTeamScoreboard()
+            };
+        }
 
         private static IQueryable<Team> CreateThreeTeams()
         {
@@ -88,6 +115,42 @@ namespace StepChallenge.Tests
                 }
             }).AsQueryable();
 
+        }
+
+        public static Participant GetParticipant()
+        {
+            var participant = new Participant
+            {
+                ParticipantName = "ParticipantNameOne",
+                ParticipantId = 1,
+                Steps = CreateSteps(10, 1),
+                Team = new Team
+                {
+                    TeamName = "Team Name"
+                }
+            };
+            return participant;
+        }
+
+        private static ICollection<Participant> GetParticipants_ForTeamScoreboard()
+        {
+            var participants = new List<Participant>
+            {
+                new Participant
+                {
+                    TeamId = 1,
+                    ParticipantName = "ParticipantNameOne",
+                    ParticipantId = 1,
+                },
+                new Participant
+                {
+                    TeamId = 1,
+                    ParticipantName = "ZParticipantNameTwo",
+                    ParticipantId = 2,
+                    Steps = CreateSteps(10,2,StartDate)
+                },
+            };
+            return participants;
         }
 
         private static ICollection<Participant> GetParticipants_TeamOne()
@@ -128,20 +191,23 @@ namespace StepChallenge.Tests
                 new Participant
                 {
                     ParticipantName = "ParticipantNameOne",
+                    ParticipantId = 1,
                 },
                 new Participant
                 {
                     ParticipantName = "ParticipantNameTwo",
+                    ParticipantId = 2,
                 },
                 new Participant
                 {
                     ParticipantName = "ParticipantNameThree",
+                    ParticipantId = 3,
                 },
             };
             return participants;
         }
 
-        private static ICollection<Steps> CreateSteps(int stepCount)
+        private static ICollection<Steps> CreateSteps(int stepCount, int participantId = 0)
         {
             var steps = new List<Steps>();
             
@@ -151,12 +217,26 @@ namespace StepChallenge.Tests
                     new Steps
                     {
                         StepCount = stepCount,
-                        DateOfSteps = StartDate.AddDays(i)
+                        DateOfSteps = StartDate.AddDays(i),
+                        ParticipantId = participantId
                     }
                 );
             }
 
             return steps;
+        }
+
+        public static ICollection<Steps> CreateSteps(int stepCount, int participantId, DateTime dateOfSteps)
+        {
+            return new List<Steps>
+            {
+                new Steps
+                {
+                    StepCount = stepCount,
+                    DateOfSteps = dateOfSteps,
+                    ParticipantId = participantId
+                }
+            };
         }
         
     }

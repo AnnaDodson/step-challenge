@@ -12,7 +12,7 @@ namespace StepChallenge.Query
 {
     public partial class StepChallengeQuery : ObjectGraphType
     {
-        public StepChallengeQuery(StepContext db, StepsService stepsService)
+        public StepChallengeQuery(StepContext db, StepsService stepsService, TeamService teamService)
         {
             // TODO these should be set in the db and able to change
             var startDate = new DateTime(2019,09,16, 0,0,0);
@@ -25,22 +25,12 @@ namespace StepChallenge.Query
                 resolve: context =>
                 {
                     var id = context.GetArgument<int>("participantId");
+
                     var participant = db.Participants
                         .Include("Team")
                         .FirstOrDefault(i => i.ParticipantId == id);
 
-                    var steps = db.Steps
-                        .Where(s => s.ParticipantId == id)
-                        .Where(s => s.DateOfSteps >= startDate && s.DateOfSteps < endDate)
-                        .OrderBy(s => s.DateOfSteps)
-                        .ToList();
-
-                    if (participant != null)
-                    {
-                        participant.Steps = steps;
-                    }
-
-                    return participant;
+                    return stepsService.GetParticipantSteps(participant);
                 });
             
             Field<ListGraphType<UserType>>(
@@ -61,32 +51,7 @@ namespace StepChallenge.Query
                 resolve: context =>
                 {
                     var id = context.GetArgument<int>("teamId");
-                    var participants = db.Participants
-                        .Where(i => i.TeamId == id);
-
-                    var teamSteps = db.Steps
-                        .Where(s => participants.Any(t => t.ParticipantId == s.ParticipantId))
-                        .GroupBy(s => s.DateOfSteps)
-                        .Select(s => new TeamScoreBoard
-                        {
-                            DateOfSteps = s.First().DateOfSteps,
-                            StepCount = s.Where(st => st.DateOfSteps >= startDate && st.DateOfSteps < endDate)
-                                .Sum(st => st.StepCount),
-                        })
-                        .OrderBy(s => s.DateOfSteps)
-                        .ToList();
-
-                    foreach (var teamStep in teamSteps)
-                    {
-                        teamStep.ParticipantsStepsStatus = participants
-                            .Select(p => new ParticipantsStepsStatus
-                            {
-                                ParticipantName = p.ParticipantName,
-                                ParticipantAddedStepCount = p.Steps.Any(ps => ps.DateOfSteps == teamStep.DateOfSteps)
-                            })
-                            .OrderBy(p => p.ParticipantName)
-                            .ToList();
-                    }
+                    var teamSteps = teamService.GetTeamScoreBoard(id);
 
                     return teamSteps;
                 });

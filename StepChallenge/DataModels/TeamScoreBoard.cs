@@ -14,6 +14,7 @@ namespace StepChallenge.DataModels
     public class ParticipantsStepsStatus
     {
         public string ParticipantName { get; set; }
+        public int ParticipantId { get; set; }
         public bool ParticipantAddedStepCount { get; set; }
     }
 }
