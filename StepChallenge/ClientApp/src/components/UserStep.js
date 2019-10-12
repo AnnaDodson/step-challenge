@@ -63,7 +63,7 @@ class UserStep extends Component {
                   <label>
                     <input style={inputStyle} type="text" value={this.state.value} onChange={this.handleChange} />
                   </label>
-                  <input type="submit" data-date="test" value="Ok" />
+                  <input type="submit" data-date="test" value="Save" />
                 </form>
               </div>
           }

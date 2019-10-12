@@ -8,9 +8,9 @@ async function loadUserSteps(id) {
   var apiHelper = new ApiHelper()
   var query = `{"query": "query teamQuery( $teamId : ID! )
      { teamSteps( teamId : $teamId )
-        {stepCount, dateOfSteps}, 
+        {stepCount, dateOfSteps, participantsStepsStatus { participantName, participantAddedStepCount} }, 
         team (teamId: $teamId )
-        {teamName, participants { participantName }}
+        {teamName, numberOfParticipants, participants { participantName }}
       } ",
     "variables": {
      "teamId": "0"
@@ -28,38 +28,55 @@ export class TeamScoreboard extends Component {
     this.state = { 
       steps: [],
       loading: true,
-       teamName:'',
+      teamName:'',
+      error: false
     };
   }
 
   componentDidMount() {
-    loadUserSteps(teamId).then(res =>
-      this.setState({
-        steps : res.teamSteps,
-        teamName:res.team.teamName,
-        participants : res.team.participants,
-        loading: false,
-      }))
+    loadUserSteps(teamId).then(res => {
+      if(res.hasOwnProperty("teamSteps")){
+        this.setState({
+          steps : res.teamSteps,
+          teamName:res.team.teamName,
+          teamNumberOfParticipants :res.team.numberOfParticipants,
+          participants : res.team.participants,
+          loading: false,
+        })
+      }else{
+        this.setState({
+            error: true,
+            loading: false
+        });
+      }})
   }
 
-  static renderTeamScores (steps, participants, teamName) {
-    return (
+  static renderTeamScores (steps, participants, teamName, teamNumberOfParticipants, error) {
+    if (error){
+      return (
+        <div>
+          <p>Something went terribly terribly wrong</p>
+        </div>
+      )
+    }else{
+      return (
         <div>
           <h3>{ teamName }</h3>
           <p>
           {participants.map(participant =>
-            <span>{participant.participantName}, </span>
+            <span className="participants_names">{participant.participantName}</span>
           )}
           </p>
-          < CreateStepTable data={steps} table={"team"} />
+          < CreateStepTable steps={steps} numberOfParticipants={teamNumberOfParticipants} table={"team"} />
         </div>
         )
+    }
   }
 
   render () {
     let contents = this.state.loading
       ? <p><em>Loading...</em></p>
-      : TeamScoreboard.renderTeamScores(this.state.steps, this.state.participants, this.state.teamName);
+      : TeamScoreboard.renderTeamScores(this.state.steps, this.state.participants, this.state.teamName, this.state.teamNumberOfParticipants, this.state.error);
     
     return (
       <div>

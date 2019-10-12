@@ -7,21 +7,12 @@ using StepChallenge.Services;
 namespace StepChallenge.Tests
 { 
     
-    public class Tests
+    public class LeaderboardTests : BaseTests
     {
-        private static readonly DateTime StartDate = new DateTime(2019,09,16, 0,0,0);
-        private static readonly DateTime DateOfFirstWeek = StartDate.AddDays(7);
-
-        private static StepContext GetMockContext()
-        {
-            return new Mock<StepContext>().Object;
-        }
-        
-        
         [Test]
         public void Test_HighestScore()
         {
-            var teams = LeaderBoardTestsData.GetTeams();
+            var teams = TestData.GetTeams();
             var stepsService = new StepsService(GetMockContext());
             
             var result = stepsService.GetTeamScores(teams, DateOfFirstWeek, StartDate, 3);
@@ -37,7 +28,7 @@ namespace StepChallenge.Tests
         [Test]
         public void Test_StepsOutOfDateRange_DoNotGetCounted()
         {
-            var teams = LeaderBoardTestsData.GetTeams_StepsOutsideOfRange();
+            var teams = TestData.GetTeams_StepsOutsideOfRange();
             var stepsService = new StepsService(GetMockContext());
 
             var result = stepsService.GetTeamScores(teams, DateOfFirstWeek, StartDate, 3);
@@ -52,7 +43,7 @@ namespace StepChallenge.Tests
         [Test]
         public void Test_StepsOnlyCountedToLatestMonday()
         {
-            var teams = LeaderBoardTestsData.GetTeams_StepsOverLeadBoardDate();
+            var teams = TestData.GetTeams_StepsOverLeadBoardDate();
             var stepsService = new StepsService(GetMockContext());
 
             var result = stepsService.GetTeamScores(teams, DateOfFirstWeek, StartDate, 3);
@@ -67,7 +58,7 @@ namespace StepChallenge.Tests
         [Test]
         public void Test_TeamsWithLessParticipants_GetAnExtraAveragedPerson()
         {
-            var teams = LeaderBoardTestsData.GetTeams_OneLessParticipantInTeamOne();
+            var teams = TestData.GetTeams_OneLessParticipantInTeamOne();
             var stepsService = new StepsService(GetMockContext());
 
             var result = stepsService.GetTeamScores(teams, DateOfFirstWeek, StartDate, 3);

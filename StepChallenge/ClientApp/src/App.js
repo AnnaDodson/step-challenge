@@ -8,6 +8,7 @@ import { Register } from './components/Register';
 import { Login } from './components/Login';
 import { Account } from './components/Account';
 import { Admin } from './components/Admin';
+import './App.css';
 
 export default class App extends Component {
   static displayName = App.name;
