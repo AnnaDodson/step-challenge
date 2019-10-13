@@ -7,11 +7,10 @@ namespace StepChallenge
 {
     public partial class StepContext : IdentityDbContext<IdentityUser >
     {
-        public DbSet<Team> Team { get; set; }
-        public DbSet<Participant> Participants { get; set; }
-        public DbSet<Steps> Steps { get; set; }
-
-        public DbSet<ChallengeSettings> ChallengeSettings { get; set; }
+        public virtual DbSet<Team> Team { get; set; }
+        public virtual DbSet<Participant> Participants { get; set; }
+        public virtual DbSet<Steps> Steps { get; set; }
+        public virtual DbSet<ChallengeSettings> ChallengeSettings { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
