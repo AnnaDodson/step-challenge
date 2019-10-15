@@ -2,7 +2,7 @@
 
 Please contribute! 
 
-If this is your first time, follow the steps listed below. Or if you're familiar with the process, TLDR: Fork the repository, commit your changes then raise a PR! If you're closing an issue, mention the issue number in the branch name and PR.
+If this is your first time, follow the steps listed below. Or if you're familiar with the process, TLDR: Fork the repository, commit your changes then raise a PR against the develop branch. If you're closing an issue, mention the issue number in the branch name and PR.
 
 ## Contents
    1. [Fork and Clone the Repo](#fork-and-clone-the-repo)
@@ -68,9 +68,9 @@ Woohoo, you're all ready! Follow the instructions in the README to get the site 
 
 ## Raising Your Pull Request
 
-Once you've created your blog post, fixed an issue or added a feature it's time to commit your changes and raise a pull request.
+Once you've fixed an issue or added a feature it's time to commit your changes and raise a pull request.
 
-To make a commit, first check what files you've changed or added:
+Follow the above steps to make sure your fork is up to date with all the latest changes. This means there will be less risk of merge conflicts. When you're ready to commit, first check what files you've changed or added:
 
 ```
 $ git status
@@ -102,7 +102,7 @@ $ git add .
 
 Then commit:
 ```
-$ git commit -m "Adding <descrption here>"
+$ git commit -m "Adding <description here>"
 ```
 
 You can enter any other details that you think are necessary too.
@@ -117,3 +117,5 @@ Also see [here](https://help.github.com/articles/adding-a-file-to-a-repository-u
 If you go over to GitHub in your browser, you should see a flag appear in your fork about raising a PR - click that and follow the instructions. Don't forget to add a good message explaining what you have done in your merge. [More details here](https://help.github.com/articles/creating-a-pull-request/)
 
 If at any point you're confused or lost, speak up and get in touch!! You can respond to an issue if you're working on one or email me, tweet me or find me on slack. Don't give up or keep quiet, I want to help.
+
+Happy contributing!
