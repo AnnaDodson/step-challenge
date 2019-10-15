@@ -95,7 +95,7 @@ namespace StepChallenge
 
                 // Lockout settings.
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(10);
-                        options.Lockout.MaxFailedAccessAttempts = 5;
+                        options.Lockout.MaxFailedAccessAttempts = 100;
                         options.Lockout.AllowedForNewUsers = true;
 
                 // User settings.
