@@ -58,10 +58,9 @@ Make sure your environment variable is set to development.
 ASPNETCORE_Environment=Development
 ```
 
-The sqlite db will be automatically created on startup into the `db` directory and the teams are auto generated.
+The sqlite db will be automatically created on startup into the `db` directory.
 
-
-Then run the dotnet app from the command line:
+Run the dotnet app from the command line:
 
 ```
 $ dotnet run
@@ -127,5 +126,22 @@ docker create --rm -it -p 8000:80 -p 8001:443 -e ASPNETCORE_URLS="https://+;http
 ```
 
 Then navigate to [https://localhost:8001](https://localhost:8001)
+
+## Seed Data
+
+If the database is empty on start-up, the data seeder will run and generate some dummy data.
+
+Four participants are created, one of which is admin and 8 teams. 6 teams do not have any participants, if you need any more - add them into the seeder.
+
+| Username | Password | Team | Admin |
+| --- | --- | --- | --- |
+| alice | alicePassword1! | Team_1 | true |
+| bob | bobPassword1! | Team_1 | false |
+| susan | susanPassword1! | Team_2 | false |
+| helga | helgaPassword1! | Team_2 | false |
+
+You can create new participants by registering them: [https://localhost:8001/register](https://localhost:8001/register)
+
+There's an admin area where you can edit participants, teams and adjust settings:  [https://localhost:8001/admin](https://localhost:8001/admin)
 
 Happy Stepping!
