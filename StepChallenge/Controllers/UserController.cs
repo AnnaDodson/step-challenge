@@ -97,8 +97,15 @@ namespace StepChallenge.Controllers
 
             if (!string.IsNullOrEmpty(model.Password))
             {
+                if (user.IdentityUser.LockoutEnd != null)
+                {
+                    user.IdentityUser.LockoutEnd = null;
+                    await _userManager.UpdateAsync(user.IdentityUser);
+                }
+
                 await _userManager.RemovePasswordAsync(user.IdentityUser);
                 var passwordResult = await _userManager.AddPasswordAsync(user.IdentityUser, model.Password);
+
                 if (passwordResult.Errors.Any())
                 {
                     var err = new Dictionary<string, string> {{"error", passwordResult.Errors.First().Description}};
