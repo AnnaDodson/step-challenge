@@ -84,6 +84,7 @@ export class Login extends Component {
     userLogin(this.state.username, this.state.password)
       .then(function(response){
         if(response.error){
+          console.log(response.errorMsg)
           self.setState({error: response.error ? response.error : "Something went wrong"});
         }
         else{

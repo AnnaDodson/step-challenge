@@ -52,7 +52,10 @@ namespace StepChallenge.Controllers
             {
                 _logger.LogInformation($"Failed login attempt for: {inputModel.Username}");
                  var err = new Dictionary<string, string>()
-                     {{"error", "Incorrect username or password. Try again"}};
+                     {
+                         {"error", "Incorrect username or password. Try again."},
+                         {"errorMsg", "Is locked out: " + result.IsLockedOut + ". Is not allowed: " + result.IsNotAllowed + ". Requires Two factor: " + result.RequiresTwoFactor}
+                     };
                  return new BadRequestObjectResult(err);
             }
             
