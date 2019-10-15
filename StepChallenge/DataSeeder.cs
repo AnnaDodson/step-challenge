@@ -59,7 +59,7 @@ namespace StepChallenge
                                 ParticipantId = 1,
                                 ParticipantName = "Alice",
                                 IsAdmin = true,
-                                IdentityUser = await GetIdentityUser("alice"),
+                                IdentityUser = await GetIdentityUser("alice", true),
                                 Steps = GetSteps()
                             },
                             new Participant
@@ -102,28 +102,6 @@ namespace StepChallenge
             }
         }
 
-        public async Task SetupRoles()
-        {
-            // TODO - this is now duplicated in the participants servive and should use that faunction
-             var user = new IdentityUser {UserName = "Admin"};
-             await _userManager.CreateAsync(user, "AdminPassword1!");
-
-             await _userManager.AddClaimAsync(user, new Claim("role", "Admin"));
-
-             var adminRole = await _roleManager.FindByNameAsync("Admin");
-             if (adminRole == null)
-             {
-                 adminRole = new IdentityRole("Admin");
-                 await _roleManager.CreateAsync(adminRole);
-                 await _roleManager.AddClaimAsync(adminRole, new Claim("Authentication", "Admin"));
-             }
-
-             if (!await _userManager.IsInRoleAsync(user, adminRole.Name))
-             {
-                 await _userManager.AddToRoleAsync(user, adminRole.Name);
-             }
-        }
-
         private List<Steps> GetSteps()
         {
             var week = 1;
@@ -160,7 +138,7 @@ namespace StepChallenge
             int GenerateRandomSteps()
             {
                 Random rnd = new Random();
-                return rnd.Next(0, 10); 
+                return rnd.Next(0, 100);
             }
             
         }
@@ -180,11 +158,34 @@ namespace StepChallenge
             return newTeams;
         }
 
-        private async Task<IdentityUser> GetIdentityUser(string name)
+        private async Task<IdentityUser> GetIdentityUser(string name, bool isAdmin = false)
         {
             var user = new IdentityUser {UserName = name};
             await _userManager.CreateAsync(user, $"{name}Password1!");
+
+            if (isAdmin)
+            {
+                await MakeAdmin(user);
+            }
             return user;
+        }
+
+        public async Task MakeAdmin(IdentityUser user)
+        {
+             await _userManager.AddClaimAsync(user, new Claim("role", "Admin"));
+
+             var adminRole = await _roleManager.FindByNameAsync("Admin");
+             if (adminRole == null)
+             {
+                 adminRole = new IdentityRole("Admin");
+                 await _roleManager.CreateAsync(adminRole);
+                 await _roleManager.AddClaimAsync(adminRole, new Claim("Authentication", "Admin"));
+             }
+
+             if (!await _userManager.IsInRoleAsync(user, adminRole.Name))
+             {
+                 await _userManager.AddToRoleAsync(user, adminRole.Name);
+             }
         }
     }
 }

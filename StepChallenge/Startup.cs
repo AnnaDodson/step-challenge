@@ -156,9 +156,6 @@ namespace StepChallenge
                 var roleManager = serviceScope.ServiceProvider.GetService<RoleManager<IdentityRole>>();
                 var dataSeed = new DataSeed(ideManager, roleManager);
                 await dataSeed.Run(db);
-
-                await dataSeed.SetupRoles();
-
             }
 
             app.UseMvc(routes =>
