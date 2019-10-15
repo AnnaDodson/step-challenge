@@ -49,6 +49,7 @@ namespace StepChallenge
                     new Team
                     {
                         TeamId = 1,
+                        NumberOfParticipants = 6,
                         TeamName = "Team_1",
                         Participants = new[]
                         {
@@ -74,6 +75,7 @@ namespace StepChallenge
                     {
                         TeamId = 2,
                         TeamName = "Team_2",
+                        NumberOfParticipants = 6,
                         Participants = new[]
                         {
                             new Participant
@@ -171,7 +173,8 @@ namespace StepChallenge
             {
                 newTeams.Add(new Team
                 {
-                    TeamName = "Team_" + (i + 1)
+                    TeamName = "Team_" + (i + 1),
+                    NumberOfParticipants = 6,
                 });
             }
             return newTeams;
