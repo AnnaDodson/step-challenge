@@ -10,6 +10,7 @@ export class AdminScoreBoard extends Component {
     super(props);
     this.state = {
       scores: [],
+      totalSteps: 0,
       dateOfLeaderboard : null,
       loading: true,
       showLeaderBoardStepCounts : false,
@@ -17,13 +18,14 @@ export class AdminScoreBoard extends Component {
     }
     this.apiHelper = new ApiHelper();
     var query = `{ "query": "{ adminLeaderBoard
-       { dateOfLeaderboard, teamScores { teamId, teamName, teamStepCount }} }" }`
+       { dateOfLeaderboard, teamScores { teamId, teamName, teamStepCount }, totalSteps } }" }`
     this.apiHelper.GraphQlApiHelper(query)
     .then(data => {
       if(data.hasOwnProperty("adminLeaderBoard")){
         this.setState({
           dateOfLeaderboard: data.adminLeaderBoard.dateOfLeaderboard,
           scores: data.adminLeaderBoard.teamScores,
+          totalSteps: data.adminLeaderBoard.totalSteps,
           loading: false
         });
       }else{
@@ -35,7 +37,7 @@ export class AdminScoreBoard extends Component {
     })
   }
 
-  static renderScoreBoard (date, scores, error) {
+  static renderScoreBoard (date, scores, totalSteps, error) {
     var dateOfScores = moment(date).format('Do MMM')
     if(!error){
         return(
@@ -54,6 +56,10 @@ export class AdminScoreBoard extends Component {
                   <td width="50%">{score.teamStepCount}</td>
                 </tr>
               )}
+              <tr>
+                <td width="50%">Total steps</td>
+                <td width="50%">{totalSteps}</td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -72,7 +78,7 @@ export class AdminScoreBoard extends Component {
     let contents =
     this.state.loading
       ? <p><em>Loading...</em></p>
-      : AdminScoreBoard.renderScoreBoard(this.state.dateOfLeaderboard, this.state.scores, this.state.error);
+      : AdminScoreBoard.renderScoreBoard(this.state.dateOfLeaderboard, this.state.scores, this.state.totalSteps, this.state.error);
 
     return (
       <div>

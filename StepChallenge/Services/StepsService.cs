@@ -20,7 +20,7 @@ namespace StepChallenge.Services
         {
             _stepContext = stepContext;
         }
-        
+
         public Steps Update(Steps existingStepCount, StepsInputs steps)
         {
             existingStepCount.StepCount = steps.StepCount;
@@ -34,12 +34,12 @@ namespace StepChallenge.Services
         {
             var challengeStartDate = new DateTime(2019,09,16);
             var currentCulture = CultureInfo.CurrentCulture;
-            
+
             var challengeStartWeek = currentCulture.Calendar.GetWeekOfYear(
                 new DateTime(challengeStartDate.Year, challengeStartDate.Month, challengeStartDate.Day),
                 currentCulture.DateTimeFormat.CalendarWeekRule,
                 currentCulture.DateTimeFormat.FirstDayOfWeek);
-            
+
             var stepsWeekNo = currentCulture.Calendar.GetWeekOfYear(
                 new DateTime(steps.DateOfSteps.Year, steps.DateOfSteps.Month, steps.DateOfSteps.Day),
                 currentCulture.DateTimeFormat.CalendarWeekRule,
@@ -72,7 +72,8 @@ namespace StepChallenge.Services
             var leaderBoard = new LeaderBoard
             {
                 DateOfLeaderboard = thisMonday,
-                TeamScores = GetTeamScores(teams, thisMonday, _startDate, GetTeamSize())
+                TeamScores = GetTeamScores(teams, thisMonday, _startDate, GetTeamSize()),
+                TotalSteps = GetTotalSteps(teams, thisMonday, _startDate, GetTeamSize())
             };
 
             return leaderBoard;
@@ -114,6 +115,17 @@ namespace StepChallenge.Services
             }
 
             return sortedTeams.OrderByDescending(t => t.TeamStepCount).ToList();
+        }
+
+        public int GetTotalSteps(IQueryable<Team> teams, DateTime thisMonday, DateTime startDate, int averageTeamSize)
+        {
+            var total = teams
+                .Sum(t => t.Participants.Sum(p => p.Steps
+                        .Where(s => s.DateOfSteps >= startDate && s.DateOfSteps < thisMonday
+                                    || t.Participants.All(u => u.Steps.All(x => x.StepCount == 0)))
+                        .Sum(s => s.StepCount)));
+
+            return total;
         }
 
         private int GetTeamSize()
