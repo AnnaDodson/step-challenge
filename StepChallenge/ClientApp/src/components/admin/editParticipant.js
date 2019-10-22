@@ -21,19 +21,31 @@ const successStyle = {
   weight: 700,
 };
 
-  async function editUser(user){
-      const response = await fetch('/api/user/edit_user', {
-         method:'POST',
-         headers:{'content-type':'application/json'},
-         body:JSON.stringify({
-          participantId: user.participantId,
-          password: user.password,
-          isAdmin: user.participantAdmin
-        })
+async function editUser(user){
+    const response = await fetch('/api/user/edit_user', {
+       method:'PATCH',
+       headers:{'content-type':'application/json'},
+       body:JSON.stringify({
+        participantId: user.participantId,
+        password: user.password,
+        isAdmin: user.participantAdmin
       })
-      var result = await response.json();
-      return result;
-  }
+    })
+    var result = await response.json();
+    return result;
+}
+
+async function deleteUser(userId){
+    const response = await fetch('/graphql', {
+       method:'DELETE',
+       headers:{'content-type':'application/json'},
+      body: JSON.stringify({
+          "query": `mutation deleteParticipant  { deleteParticipant  ( participant : {  participantId : ${userId} } )  { participantId } } `
+         })
+  })
+    var result = await response.json();
+    return result;
+}
 
 export class EditParticipant extends Component {
   static displayName = EditParticipant.name;
@@ -59,6 +71,7 @@ export class EditParticipant extends Component {
     this.handleChangeAdmin = this.handleChangeAdmin.bind(this);
     this.handleChangePassword = this.handleChangePassword.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleDelete = this.handleDelete.bind(this);
     this.apiHelper = new ApiHelper();
     var query = `{ "query": "query usersQuery { users { isAdmin, participantName, username, participantId, team {teamName} } }" }`
     this.apiHelper.GraphQlApiHelper(query)
@@ -74,7 +87,12 @@ export class EditParticipant extends Component {
   handleSubmit(event) {
     var self = this;
     event.preventDefault();
-    editUser( {participantAdmin: this.state.editParticipantAdmin, email: this.state.editParticipantEmail, participantId : this.state.editParticipantId,  participantName : this.state.editParticipantName, password : this.state.editParticipantPassword }).then(function(res){
+    editUser( {participantAdmin: this.state.editParticipantAdmin,
+      email: this.state.editParticipantEmail,
+      participantId : this.state.editParticipantId,
+      participantName : this.state.editParticipantName,
+      password : this.state.editParticipantPassword
+    }).then(function(res){
         if(res.error){
             console.log(res.error);
             self.setState({error: res.error});
@@ -83,6 +101,26 @@ export class EditParticipant extends Component {
             self.setState({success : "Saved"})
         }
     })
+  }
+
+  handleDelete(event) {
+    var self = this;
+    event.preventDefault();
+    if (window.confirm('Are you sure you wish to delete this participant? \n\nAll steps will be deleted and this action cannot be undone')){
+      deleteUser( this.state.editParticipantId )
+        .then(function(res){
+          if(res.error){
+              console.log(res.error);
+              self.setState({error: res.error});
+          }
+          else{
+              self.setState({success : "Deleted"})
+              var newUserList =_.reject(self.state.users, function(user){ return user.participantId == self.state.editParticipantId; });
+              self.setState({users : newUserList })
+              self.setState({editing: false, success: false, error: null});
+          }
+     })
+    }
   }
 
   handleClick(event) {
@@ -156,7 +194,8 @@ export class EditParticipant extends Component {
                           <input type="checkbox" checked={this.state.editParticipantAdmin} style={{ marginLeft: "8px"}} onChange={this.handleChangeAdmin} />
                           <br />
                           <br />
-                          <input type="submit" className="btn btn-success" disabled={this.state.error} value="Save" />
+                          <input type="submit" className="btn btn-success" style={{"width": "40%", "margin-right": "20px"}} disabled={this.state.error} value="Save" />
+                          <button className="btn btn-danger" style={{"width": "40%"}} disabled={this.state.error} onClick={this.handleDelete}>Delete</button>
                         </form>
                         {this.state.error &&
                           <p style={errorStyle}>{this.state.error}</p>

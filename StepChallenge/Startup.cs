@@ -41,9 +41,15 @@ namespace StepChallenge
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
+
+            services.AddIdentity<IdentityUser, IdentityRole>(options => options.Stores.MaxLengthForKeys = 128)
+                .AddEntityFrameworkStores<StepContext>()
+                //.AddDefaultUI()
+                .AddDefaultTokenProviders();
+
             services.AddDbContext<StepContext>();
             services.AddTransient<StepsService>();
-            services.AddTransient<UserService>();
+            services.AddTransient<ParticipantService>();
             services.AddTransient<TeamService>();
             services.AddSingleton<ParticipantType>();
             services.AddSingleton<UserType>();
@@ -57,6 +63,7 @@ namespace StepChallenge
             services.AddSingleton<StepChallengeQuery>();
             services.AddSingleton<ChallengeSettingsType>();
             services.AddSingleton<ChallengeSettingsInputType>();
+            services.AddSingleton<ParticipantInputType>();
             services.AddSingleton<TeamInputType>();
             services.AddSingleton<AdminLeaderBoardType>();
             services.AddSingleton<TeamScoreBoardType>();
@@ -73,11 +80,6 @@ namespace StepChallenge
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
             });
-
-            services.AddIdentity<IdentityUser, IdentityRole>(options => options.Stores.MaxLengthForKeys = 128)
-                .AddEntityFrameworkStores<StepContext>()
-                //.AddDefaultUI()
-                .AddDefaultTokenProviders();
 
             services.AddMvc()
                     .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
