@@ -19,20 +19,20 @@ namespace StepChallenge.Controllers
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly ILogger<RegisterController> _logger;
-        private readonly UserService _userService;
+        private readonly ParticipantService _participantService;
         private readonly TeamService _teamService;
 
         public RegisterController(
             UserManager<IdentityUser> userManager,
             SignInManager<IdentityUser> signInManager,
             ILogger<RegisterController> logger,
-            UserService userService,
+            ParticipantService participantService,
             TeamService teamService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
-            _userService = userService;
+            _participantService = participantService;
             _teamService = teamService;
         }
 
@@ -80,7 +80,7 @@ namespace StepChallenge.Controllers
                 return new BadRequestObjectResult(err);
             }
 
-            var newUser = await _userService.CreateNewParticipant(
+            var newUser = await _participantService.CreateNewParticipant(
                 new Participant
                 {
                     ParticipantName = inputModel.Name,

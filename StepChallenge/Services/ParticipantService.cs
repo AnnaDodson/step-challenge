@@ -1,27 +1,33 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Model;
+using StepChallenge.Controllers;
 
 namespace StepChallenge.Services
 {
-    public class UserService
+    public class ParticipantService
     {
         private readonly StepContext _stepContext;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-        
-        public UserService(
+        private readonly ILogger<RegisterController> _logger;
+
+        public ParticipantService(
             StepContext stepContext,
             UserManager<IdentityUser> userManager,
-            RoleManager<IdentityRole> roleManager
+            RoleManager<IdentityRole> roleManager,
+            ILogger<RegisterController> logger
             )
         {
             _stepContext = stepContext;
             _userManager = userManager;
             _roleManager = roleManager;
+            _logger = logger;
         }
         
         public async Task<Participant> CreateNewParticipant(Participant newParticipant)
@@ -67,6 +73,24 @@ namespace StepChallenge.Services
              {
                  await _userManager.RemoveFromRoleAsync(participant.IdentityUser, adminRole.Name);
              }
+        }
+
+        public async Task DeleteParticipant(Participant participant)
+        {
+            var steps = _stepContext.Steps
+                .Where(s => s.ParticipantId == participant.ParticipantId);
+
+            _stepContext.Steps.RemoveRange(steps);
+            _stepContext.Participants.Remove(participant);
+            await _stepContext.SaveChangesAsync();
+
+            var result = await _userManager.DeleteAsync(participant.IdentityUser);
+
+            if (result.Errors.Any())
+            {
+                var err = new Dictionary<string, string> {{"error", result.Errors.First().Description}};
+            }
+            _logger.LogInformation($"Admin deleted participant: {participant.ParticipantName}");
         }
     }
 }

@@ -1,10 +1,9 @@
 using GraphQL.Types;
-using Model;
 using Model.GraphQL;
 using StepChallenge.Services;
 using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using StepChallenge.DataModels;
 
@@ -12,7 +11,7 @@ namespace StepChallenge.Mutation
 {
     public class StepChallengeMutation : ObjectGraphType
     {
-        public StepChallengeMutation(StepContext db, StepsService stepsService)
+        public StepChallengeMutation(StepContext db, StepsService stepsService, ParticipantService  participantService)
         {
             Name = "Mutation";
 
@@ -77,6 +76,27 @@ namespace StepChallenge.Mutation
                         
                     db.SaveChanges();
                     return team;
+                });
+
+            FieldAsync<ParticipantType>(
+                "deleteParticipant",
+                arguments:  new QueryArguments(
+                                new QueryArgument<NonNullGraphType<ParticipantInputType>> {Name = "participant" }),
+                resolve: async context =>
+                {
+                    var participant = context.GetArgument<EditUserModel>("participant");
+
+                    var user = await db.Participants
+                        .Where(u => u.ParticipantId == participant.ParticipantId)
+                        .Include(u => u.IdentityUser)
+                        .SingleOrDefaultAsync();
+
+                    if (user != null)
+                    {
+                        await participantService.DeleteParticipant(user);
+                    }
+
+                    return user;
                 });
         }
     }

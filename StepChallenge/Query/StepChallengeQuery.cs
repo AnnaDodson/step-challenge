@@ -39,7 +39,8 @@ namespace StepChallenge.Query
                 {
                     var participants = db.Participants
                         .Include("IdentityUser")
-                        .Include("Team");
+                        .Include("Team")
+                        .OrderBy(u => u.ParticipantName);
 
                     return participants;
                 });
