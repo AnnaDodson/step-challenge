@@ -9,6 +9,6 @@ namespace StepChallenge.DataModels
     {
         public List<TeamScores> TeamScores { get; set; }
         public DateTimeOffset DateOfLeaderboard { get; set; }
-        
+        public int TotalSteps { get; set; }
     }
 }
