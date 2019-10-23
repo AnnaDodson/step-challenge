@@ -55,23 +55,23 @@ export class ScoreBoard extends Component {
                 :
                 scores.map(score =>
                     <tr key={score.teamId}>
-                        <td width="100%">{score.teamName}</td>
+                        <td colSpan="2" width="100%">{score.teamName}</td>
                     </tr>
                 );
-            var colSpan = showLeaderBoardStepCounts ? 2 : 1;
-            var total = showLeaderBoardStepCounts ? (
+
+            var total = (
                 <tr>
                     <td width="50%">Total steps</td>
                     <td width="50%">{totalSteps}</td>
                 </tr>
-            ) : null;
+            );
             return(
                 <div>
                     <h3>Updated every Monday<span style={{ fontStyle: "italic", fontSize: "16px" }}> Any new steps added for previous weeks will be included</span> </h3>
                     <table className='table table-striped' style={{ textAlign : "center", fontSize: "24px" }} >
                         <thead>
                             <tr>
-                                <th colSpan={colSpan} >Teams Step Counts until { dateOfScores }</th>
+                                <th colSpan="2" >Teams Step Counts until { dateOfScores }</th>
                             </tr>
                         </thead>
                         <tbody>
