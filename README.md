@@ -22,7 +22,7 @@ Built for a company step challenge competition. In beta.
 
 ## Contributing
 
-Check out the [contributing guide](/contributing.md) for instructions on how to contribute to this project.
+Check out the [contributing guide](/CONTRIBUTING.md) for instructions on how to contribute to this project.
 
 ## License
 
