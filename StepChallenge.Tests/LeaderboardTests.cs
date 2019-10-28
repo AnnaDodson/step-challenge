@@ -56,6 +56,19 @@ namespace StepChallenge.Tests
         }
 
         [Test]
+        public void Test_StepsOnlyCountedToLatestMonday_Total()
+        {
+            var teams = TestData.GetTeams_StepsOverLeadBoardDate();
+            var stepsService = new StepsService(GetMockContext());
+
+            var total = stepsService.GetTotalSteps(teams, DateOfFirstWeek, StartDate, 3);
+
+            const int expectedTotalSteps = ((10*3)+(20*3)+(30*3))*3;
+            
+            Assert.AreEqual(expectedTotalSteps, total, $"Expected TotalStepCount {expectedTotalSteps} but got {total} instead");
+        }
+
+        [Test]
         public void Test_TeamsWithLessParticipants_GetAnExtraAveragedPerson()
         {
             var teams = TestData.GetTeams_OneLessParticipantInTeamOne();

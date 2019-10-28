@@ -20,21 +20,21 @@ namespace StepChallenge.Controllers
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly ILogger<RegisterController> _logger;
-        private readonly UserService _userService;
+        private readonly ParticipantService _participantService;
         private readonly StepContext _stepContext;
 
         public UserController(
             UserManager<IdentityUser> userManager,
             SignInManager<IdentityUser> signInManager,
             ILogger<RegisterController> logger,
-            UserService userService,
+            ParticipantService participantService,
             StepContext stepContext
             )
         {
             _userManager = userManager;
            _signInManager = signInManager;
             _logger = logger;
-            _userService = userService;
+            _participantService = participantService;
             _stepContext = stepContext;
         }
        
@@ -77,7 +77,7 @@ namespace StepChallenge.Controllers
             return new OkResult();
         }
 
-        [HttpPost]
+        [HttpPatch]
         [Authorize(Roles = "Admin")]
         [Route("edit_user")]
         [Consumes(MediaTypeNames.Application.Json)]
@@ -113,19 +113,19 @@ namespace StepChallenge.Controllers
                 }
             }
 
-            if (model.isAdmin != user.IsAdmin)
+            if (model.IsAdmin != user.IsAdmin)
             {
-                if (model.isAdmin)
+                if (model.IsAdmin)
                 {
-                    await _userService.AddAdminAccess(user);
+                    await _participantService.AddAdminAccess(user);
                 }
 
-                if (!model.isAdmin)
+                if (!model.IsAdmin)
                 {
-                    await _userService.RemoveAdminAccess(user);
+                    await _participantService.RemoveAdminAccess(user);
                 }
 
-                user.IsAdmin = model.isAdmin;
+                user.IsAdmin = model.IsAdmin;
                 await _stepContext.SaveChangesAsync();
             }
 
