@@ -32,10 +32,12 @@ class TeamStep extends Component {
     for (var i = 0; i < this.state.numberOfParticipants; i++) {
       var status = {
         name : "User not registered yet",
+        initials: "-",
         steps: false
       }
       if(this.state.participantsStatus[i] != null ){
         status.name = this.state.participantsStatus[i].participantName
+        status.initials = this.state.participantsStatus[i].participantName.split(' ').map((item) => { return item[0] }).join('') //"DW"
         status.steps = this.state.participantsStatus[i].participantAddedStepCount
       }
         info[i] = status
@@ -48,7 +50,7 @@ class TeamStep extends Component {
         <br/>
          <div style={{"width":"100%"}}>
           {info.map(s =>
-            <span title={this.state.steps != 0 ? s.name : "no steps counted"} className="statusInfo" style={ s.steps ? infoDone : this.state.steps != 0 ? infoMissing : null}></span>
+            <span title={this.state.steps != 0 ? s.name : "no steps counted"} className="statusInfo" style={ s.steps ? infoDone : this.state.steps != 0 ? infoMissing : null}>{s.initials}</span>
           )}
         </div>
       </div>
