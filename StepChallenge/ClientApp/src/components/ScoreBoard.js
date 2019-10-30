@@ -43,6 +43,8 @@ export class ScoreBoard extends Component {
     }
 
     static renderScoreBoard (date, scores, totalSteps, displayLeaderBoard, showLeaderBoardStepCounts, error) {
+        const numberOfStepsPerMile = 2000;
+        var totalMiles = totalSteps * (1 / numberOfStepsPerMile);
         var dateOfScores = moment(date).format('Do MMM')
         if(displayLeaderBoard && !error){
             var teams = showLeaderBoardStepCounts ?
@@ -61,8 +63,8 @@ export class ScoreBoard extends Component {
 
             var total = (
                 <tr>
-                    <td width="50%">Total steps</td>
-                    <td width="50%">{totalSteps}</td>
+                    <td width="50%">Total</td>
+                    <td width="50%">{totalSteps} steps ({totalMiles} miles)</td>
                 </tr>
             );
             return(
