@@ -37,7 +37,7 @@ class TeamStep extends Component {
       }
       if(this.state.participantsStatus[i] != null ){
         status.name = this.state.participantsStatus[i].participantName
-        status.initials = this.state.participantsStatus[i].participantName.charAt(0)
+        status.initials = this.state.participantsStatus[i].participantName.charAt(0).toUpperCase()
         status.steps = this.state.participantsStatus[i].participantAddedStepCount
       }
         info[i] = status
