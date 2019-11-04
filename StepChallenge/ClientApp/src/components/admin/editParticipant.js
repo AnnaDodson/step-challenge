@@ -115,7 +115,7 @@ export class EditParticipant extends Component {
           }
           else{
               self.setState({success : "Deleted"})
-              var newUserList =_.reject(self.state.users, function(user){ return user.participantId == self.state.editParticipantId; });
+              var newUserList =_.reject(self.state.users, function(user){ return user.participantId === self.state.editParticipantId; });
               self.setState({users : newUserList })
               self.setState({editing: false, success: false, error: null});
           }
@@ -126,7 +126,7 @@ export class EditParticipant extends Component {
   handleClick(event) {
     this.setState({editing: false, success: false, error: null});
     var selectedUserId = event.target.value
-    var user =_.find(this.state.users, function(user){ return user.participantId == selectedUserId; }); 
+    var user =_.find(this.state.users, function(user){ return user.participantId === selectedUserId; }); 
     if(user){
       this.setState({editUser: user,
       editParticipantId: user.participantId,
@@ -147,7 +147,7 @@ export class EditParticipant extends Component {
   }
 
   handleChangeAdmin(event) {
-    var newState = this.state.editParticipantAdmin == true ? false : true;
+    var newState = this.state.editParticipantAdmin === true ? false : true;
     this.setState({error: null, success: null});
     this.setState({editParticipantAdmin : newState})
   }
@@ -185,7 +185,7 @@ export class EditParticipant extends Component {
                             Reset Password
                           </label>
                           <br />
-                          <input type="text" type="password" value={this.state.editParticipantPassword} onChange={this.handleChangePassword} />
+                          <input type="password" value={this.state.editParticipantPassword} onChange={this.handleChangePassword} />
                           <br />
                           <br />
                           <label>
