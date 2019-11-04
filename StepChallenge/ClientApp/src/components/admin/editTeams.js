@@ -41,7 +41,6 @@ export class EditTeams extends Component {
         teamName : "",
         numberOfParticipants: 0,
         teamId : 0,
-        error : false,
         saved : false,
     }
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -69,7 +68,7 @@ export class EditTeams extends Component {
   handleChangeTeam(event) {
     this.setState({ showTeam : false, saved : false })
     var selectedTeamId = event.target.value
-    var selectedTeam =_.find(this.state.teams, function(team){ return team.teamId == selectedTeamId; }); 
+    var selectedTeam =_.find(this.state.teams, function(team){ return team.teamId === selectedTeamId; }); 
     if(selectedTeam){
       this.setState({
         team: selectedTeam,
@@ -89,7 +88,6 @@ export class EditTeams extends Component {
   }
 
   handleSubmit(event){
-    var self = this;
     event.preventDefault();
     var updated = {
         teamId : this.state.teamId,
@@ -97,7 +95,7 @@ export class EditTeams extends Component {
         numberOfParticipants : this.state.numberOfParticipants
     }
     updateTeam(updated).then(data => {
-        var findTeam =_.find(this.state.teams, function(team){ return team.teamId == updated.teamId }); 
+        var findTeam =_.find(this.state.teams, function(team){ return team.teamId === updated.teamId });
         findTeam.numberOfParticipants = data.numberOfParticipants
         findTeam.teamName = data.teamName
         this.setState({

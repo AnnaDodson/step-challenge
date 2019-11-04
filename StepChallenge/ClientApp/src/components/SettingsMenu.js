@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
 import Dropdown from 'react-bootstrap/Dropdown';
 import Auth from './Auth';
 
@@ -7,10 +6,12 @@ export default class SettingsMenu extends Component {
   static displayName = SettingsMenu.name;
   constructor (props) {
     super(props);
-    this.state = {
-    };
     this.handleLogout = this.handleLogout.bind(this);
     this.auth = new Auth()
+    this.isAdmin = this.auth.isAdmin();
+    this.state = {
+      isAdmin : this.auth.isAdmin(),
+    };
   }
 
   render () {
@@ -21,7 +22,10 @@ export default class SettingsMenu extends Component {
             </Dropdown.Toggle>
 
             <Dropdown.Menu>
-              <Dropdown.Item><Link to="/account">Account</Link></Dropdown.Item>
+              <Dropdown.Item href="/account">Account</Dropdown.Item>
+              {this.state.isAdmin &&
+                <Dropdown.Item href="/admin">Admin</Dropdown.Item>
+              }
               <Dropdown.Item onClick={this.handleLogout}>Log out</Dropdown.Item>
             </Dropdown.Menu>
         </Dropdown>
