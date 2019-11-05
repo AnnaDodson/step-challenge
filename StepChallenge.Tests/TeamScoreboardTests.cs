@@ -60,7 +60,71 @@ namespace StepChallenge.Tests
             
             Assert.IsFalse(resultFirstParticipantStepsStatus, $"Expected participant to have step status of False but got {resultFirstParticipantStepsStatus}"); 
         }
-        
+
+        /// <summary>
+        /// Tests that if a participant has the most steps, they are returned as the highest stepper
+        /// </summary>
+        [Test]
+        public void Test_TeamMembersStepStatus_ParticipantHasHighestScore()
+        {
+            var team = TestData.CreateTeamWithHighestStepper();
+
+            var teamService = new TeamService(GetMockStepContext(team));
+            var result = teamService.GetTeamScoreBoard(1);
+
+            var actual = false;
+            var participant = result.First().ParticipantsStepsStatus.SingleOrDefault(p => p.ParticipantId == 1);
+            if (participant != null)
+            {
+                actual = participant.ParticipantHighestStepper;
+            }
+
+            Assert.IsTrue(actual, $"Expected participant to have highest step status of True but got {actual}");
+        }
+
+        /// <summary>
+        /// Tests that if two participants have the most steps, they are both returned as highest stepper set to true
+        /// </summary>
+        [Test]
+        public void Test_TeamMembersStepStatus_ParticipantHasHighestScoreIfStepsAreSame()
+        {
+            var team = TestData.CreateTeamWithHighestStepper();
+            team.Participants.ElementAt(1).Steps.First().StepCount = team.Participants.ElementAt(0).Steps.First().StepCount;
+
+            var teamService = new TeamService(GetMockStepContext(team));
+            var result = teamService.GetTeamScoreBoard(1);
+
+            var actualOne = false;
+            var actualTwo = false;
+
+            var participantOne = result.First().ParticipantsStepsStatus.SingleOrDefault(p => p.ParticipantId == 1);
+            var participantTwo = result.First().ParticipantsStepsStatus.SingleOrDefault(p => p.ParticipantId == 1);
+            if (participantOne != null && participantTwo != null)
+            {
+                actualOne = participantOne.ParticipantHighestStepper;
+                actualTwo = participantTwo.ParticipantHighestStepper;
+            }
+
+            Assert.IsTrue(actualOne && actualTwo, $"Expected participants to both have highest step status of True but got {actualOne} & {actualTwo}");
+        }
+
+        /// <summary>
+        /// Tests that if all participants have zero steps, there is no highest stepper
+        /// </summary>
+        [Test]
+        public void Test_TeamMembersStepStatus_ParticipantsWithZeroStepsAreHighestStepper()
+        {
+            var team = TestData.CreateTeamWithHighestStepper();
+            team.Participants.ElementAt(0).Steps.First().StepCount = 0;
+            team.Participants.ElementAt(1).Steps.First().StepCount = 0;
+            team.Participants.ElementAt(2).Steps.First().StepCount = 0;
+
+            var teamService = new TeamService(GetMockStepContext(team));
+            var result = teamService.GetTeamScoreBoard(1);
+
+            Assert.IsTrue(result.All(r => r.ParticipantsStepsStatus.All(s => s.ParticipantHighestStepper == false)), $"Expected all participants to have highest step status of False but got True"); 
+        }
+
         private StepContext GetMockStepContext(Team team)
         {
             var teamSteps = new List<Steps>();

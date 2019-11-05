@@ -88,6 +88,40 @@ namespace StepChallenge.Tests
             };
         }
 
+        public static Team CreateTeamWithHighestStepper()
+        {
+            return new Team
+            {
+                TeamId = 1,
+                TeamName = "Team_1",
+                NumberOfParticipants = 3,
+                Participants = new List<Participant>
+                {
+                    new Participant
+                    {
+                        ParticipantName = "B_ParticipantNameOne",
+                        ParticipantId = 1,
+                        Steps = CreateSteps(10, 1, StartDate),
+                        TeamId = 1,
+                    },
+                    new Participant
+                    {
+                        ParticipantName = "A_ParticipantNameTwo",
+                        ParticipantId = 2,
+                        Steps = CreateSteps(5, 2, StartDate),
+                        TeamId = 1,
+                    },
+                    new Participant
+                    {
+                        ParticipantName = "C_ParticipantNameThree",
+                        ParticipantId = 3,
+                        Steps = CreateSteps(1, 3, StartDate),
+                        TeamId = 1,
+                    },
+                }
+            };
+        }
+
         private static IQueryable<Team> CreateThreeTeams()
         {
             return (new List<Team>

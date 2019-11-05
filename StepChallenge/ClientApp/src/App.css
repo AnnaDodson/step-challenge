@@ -13,3 +13,8 @@
   font-size: 0.55em;
   text-align: center;
   font-weight: 700; }
+
+.goldStar {
+  border: "1px solid red";
+  text-decoration: underline;
+}
