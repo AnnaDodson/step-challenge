@@ -16,5 +16,7 @@ namespace StepChallenge.DataModels
         public string ParticipantName { get; set; }
         public int ParticipantId { get; set; }
         public bool ParticipantAddedStepCount { get; set; }
+        public int ParticipantStepCount { get; set; }
+        public bool ParticipantHighestStepper { get; set; }
     }
 }

@@ -8,7 +8,7 @@ async function loadUserSteps(id) {
   var apiHelper = new ApiHelper()
   var query = `{"query": "query teamQuery( $teamId : ID! )
      { teamSteps( teamId : $teamId )
-        {stepCount, dateOfSteps, participantsStepsStatus { participantName, participantAddedStepCount} }, 
+        {stepCount, dateOfSteps, participantsStepsStatus { participantName, participantAddedStepCount, participantHighestStepper} }, 
         team (teamId: $teamId )
         {teamName, numberOfParticipants, participants { participantName }}
       } ",
