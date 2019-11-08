@@ -94,4 +94,27 @@ export default class Auth {
         return false;
       }
     }
+
+    registerUser = async function(name, email, password, team){
+        const response = await fetch('/api/register', {
+         method:'POST',
+         headers:{'content-type':'application/json'},
+         body:JSON.stringify({
+          name: name,
+          email: email,
+          password: password,
+          teamId: team
+        })
+      });
+      const result = await response;
+      const responseBody = await response.json();
+      if(result.status === 400){
+          console.log(responseBody.errorLogMessage)
+          return { error : responseBody.error}
+        }
+        else{
+          this.createLoggedInCookies(responseBody)
+          return responseBody;
+        }
+    }
 }
