@@ -54,13 +54,28 @@ namespace StepChallenge.Services
 
             foreach (var teamStep in teamSteps)
             {
-                teamStep.ParticipantsStepsStatus = participants
+                var stepsStatuses = participants
                     .Select(p => new ParticipantsStepsStatus
                     {
                         ParticipantName = p.ParticipantName,
                         ParticipantId = p.ParticipantId,
-                        ParticipantAddedStepCount = p.Steps.Any(ps => ps.DateOfSteps == teamStep.DateOfSteps && ps.StepCount != 0)
+                        ParticipantAddedStepCount =
+                            p.Steps.Any(ps => ps.DateOfSteps == teamStep.DateOfSteps && ps.StepCount != 0),
+                        ParticipantStepCount = p.Steps.Where(ps => ps.DateOfSteps == teamStep.DateOfSteps).Sum(ps => ps.StepCount),
                     })
+                    .OrderByDescending(p => p.ParticipantStepCount)
+                    .ToList();
+
+                var highest = stepsStatuses.First().ParticipantStepCount;
+                if (highest != 0)
+                {
+                    foreach (var stepStatus in stepsStatuses.Where(p => p.ParticipantStepCount == highest))
+                    {
+                        stepStatus.ParticipantHighestStepper = true;
+                    }
+                }
+
+                teamStep.ParticipantsStepsStatus = stepsStatuses
                     .OrderBy(p => p.ParticipantName)
                     .ToList();
             }

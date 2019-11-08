@@ -19,6 +19,7 @@ namespace StepChallenge.Controllers
         
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ILogger<RegisterController> _logger;
         private readonly ParticipantService _participantService;
         private readonly StepContext _stepContext;
@@ -26,6 +27,7 @@ namespace StepChallenge.Controllers
         public UserController(
             UserManager<IdentityUser> userManager,
             SignInManager<IdentityUser> signInManager,
+            RoleManager<IdentityRole> roleManager,
             ILogger<RegisterController> logger,
             ParticipantService participantService,
             StepContext stepContext
@@ -33,6 +35,7 @@ namespace StepChallenge.Controllers
         {
             _userManager = userManager;
            _signInManager = signInManager;
+           _roleManager = roleManager;
             _logger = logger;
             _participantService = participantService;
             _stepContext = stepContext;
@@ -45,24 +48,31 @@ namespace StepChallenge.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> OnPostAsync([FromBody] InputModel inputModel)
         {
+            var result = new LoginModel();
             // This doesn't count login failures towards account lockout
             // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-            var result = await _signInManager.PasswordSignInAsync(inputModel.Username, inputModel.Password, false, lockoutOnFailure: true);
-            if (!result.Succeeded)
+            var loginResult = await _signInManager.PasswordSignInAsync(inputModel.Username, inputModel.Password, false, lockoutOnFailure: true);
+            if (!loginResult.Succeeded)
             {
                 _logger.LogInformation($"Failed login attempt for: {inputModel.Username}");
-                 var err = new Dictionary<string, string>()
-                     {
-                         {"error", "Incorrect username or password. Try again."},
-                         {"errorMsg", "Is locked out: " + result.IsLockedOut + ". Is not allowed: " + result.IsNotAllowed + ". Requires Two factor: " + result.RequiresTwoFactor}
-                     };
-                 return new BadRequestObjectResult(err);
+                result.Error = "Incorrect username or password. Try again";
+                result.ErrorLogMessage = "Is locked out: " + loginResult.IsLockedOut + ". Is not allowed: " + loginResult.IsNotAllowed + ". Requires Two factor: " + loginResult.RequiresTwoFactor;
+                 return new BadRequestObjectResult(result);
+            }
+
+            result.Success = true;
+
+            var user = await _userManager.FindByNameAsync(inputModel.Username);
+            var adminRole = await _roleManager.FindByNameAsync("Admin");
+
+            if (await _userManager.IsInRoleAsync(user, adminRole.Name))
+            {
+                result.IsAdmin = true;
             }
             
             _logger.LogInformation($"User Successfully logged in: {inputModel.Username}");
-            var response = new Dictionary<string, string>();
-            response.Add("success", "User logged in");
-            return new OkObjectResult(response);
+
+            return new OkObjectResult(result);
         }
 
         [HttpPost]
@@ -75,6 +85,33 @@ namespace StepChallenge.Controllers
             _logger.LogInformation($"User Successfully logged in: {mode.Username}");
             await _signInManager.SignOutAsync();
             return new OkResult();
+        }
+
+        [HttpGet]
+        [Route("is_admin")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> OnGetIsAdmin()
+        {
+            var response = new LoginModel();
+            var user = await _userManager.GetUserAsync(User);
+
+            if (user == null)
+            {
+                response.Error = "No user found";
+                return new BadRequestObjectResult(response);
+            }
+
+            var adminRole = await _roleManager.FindByNameAsync("Admin");
+
+            if (await _userManager.IsInRoleAsync(user, adminRole.Name))
+            {
+                response.Success = true;
+                response.IsAdmin = true;
+            }
+
+            _logger.LogInformation($"Navigating to the admin page {user.UserName}");
+
+            return new OkObjectResult(response);
         }
 
         [HttpPatch]

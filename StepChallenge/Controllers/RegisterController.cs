@@ -89,9 +89,12 @@ namespace StepChallenge.Controllers
                 }
             );
 
-             var response = new Dictionary<string, string>()
-                 {{"name", newUser.ParticipantName }};
-             return new OkObjectResult(response);
+            var response = new LoginModel
+            {
+                Success = true,
+            };
+
+            return new OkObjectResult(response);
         }
 
         [Route("get_teams")]

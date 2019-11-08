@@ -99,7 +99,7 @@ namespace StepChallenge.Services
                 {
                     TeamId = t.TeamId,
                     TeamName = t.TeamName,
-                    NumberOfParticipants = t.NumberOfParticipants, //TODO - need to know how many are in a team, if participants haven't registered yet then we can't rely on counting all participants
+                    NumberOfParticipants = t.NumberOfParticipants,
                     TeamStepCount = t.Participants.Sum(p => p.Steps
                         .Where(s => s.DateOfSteps >= startDate && s.DateOfSteps < thisMonday
                                     || t.Participants.All(u => u.Steps.All(x => x.StepCount == 0)))
@@ -107,6 +107,7 @@ namespace StepChallenge.Services
                 })
                 .ToList();
 
+            // add a pretend participant with averaged steps to teams with less participants
             foreach (var teamScore in sortedTeams.Where(t => t.NumberOfParticipants != averageTeamSize && t.NumberOfParticipants != 0))
             {
                 teamScore.TeamStepCount = ((teamScore.TeamStepCount / teamScore.NumberOfParticipants) *

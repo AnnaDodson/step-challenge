@@ -47,7 +47,7 @@ export class EditChallengeSettings extends Component {
   }
 
   handleSaveDisplayLeaderBoard(setting) {
-    var newState = this.state.showLeaderBoard == true ? false : true;
+    var newState = this.state.showLeaderBoard === true ? false : true;
     this.setState({showLeaderBoard : newState, error: false})
     updateSetting({
         showLeaderBoard : newState,
@@ -67,7 +67,7 @@ export class EditChallengeSettings extends Component {
   }
 
   handleSaveDisplayTeamScores(setting) {
-    var newSettings = this.state.displayTeamScores == true ? false : true;
+    var newSettings = this.state.displayTeamScores === true ? false : true;
     this.setState({displayTeamScores : newSettings, error : false})
     updateSetting({
         showLeaderBoard : this.state.showLeaderBoard,

@@ -33,12 +33,14 @@ class TeamStep extends Component {
       var status = {
         name : "User not registered yet",
         initials: "-",
-        steps: false
+        steps: false,
+        highestStepper: false
       }
       if(this.state.participantsStatus[i] != null ){
         status.name = this.state.participantsStatus[i].participantName
-        status.initials = this.state.participantsStatus[i].participantName.charAt(0)
+        status.initials = this.state.participantsStatus[i].participantName.charAt(0).toUpperCase()
         status.steps = this.state.participantsStatus[i].participantAddedStepCount
+        status.highestStepper = this.state.participantsStatus[i].participantHighestStepper
       }
         info[i] = status
     }
@@ -50,13 +52,12 @@ class TeamStep extends Component {
         <br/>
          <div style={{"width":"100%"}}>
           {info.map(s =>
-            <span title={this.state.steps != 0 ? s.name : "no steps counted"} className="statusInfo" style={ s.steps ? infoDone : this.state.steps != 0 ? infoMissing : null}>{s.initials}</span>
+            <span title={this.state.steps != 0 ? s.name + (s.highestStepper ? " - well done on being top stepper!" : "") : "no steps counted"} className={s.highestStepper == true ? "goldStar statusInfo" : "statusInfo"} style={  s.steps ? infoDone : this.state.steps != 0 ? infoMissing : null}>{s.initials}</span>
           )}
         </div>
       </div>
     )
   }
 }
-
 
 export default TeamStep;

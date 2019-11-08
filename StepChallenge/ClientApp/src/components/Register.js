@@ -10,21 +10,6 @@ async function getTeams() {
   return responseBody;
 }
 
-async function registerUser(name, email, password, team){
-    const response = await fetch('/api/register', {
-     method:'POST',
-     headers:{'content-type':'application/json'},
-     body:JSON.stringify({
-      name: name,
-      email: email,
-      password: password,
-      teamId: team
-    })
-  });
-  const responseBody = await response.json();
-  return responseBody;
-}
-
 const errorStyle = {
   color: 'red',
   weight: 700,
@@ -59,6 +44,7 @@ export class Register extends Component {
     this.handleChangeEmail = this.handleChangeEmail.bind(this);
     this.handleChangeTeam = this.handleChangeTeam.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.auth = new Auth();
     getTeams()
       .then(data => {
         this.setState({teams: data});
@@ -167,17 +153,13 @@ export class Register extends Component {
   handleSubmit(event) {
     var self = this;
     event.preventDefault();
-    registerUser(this.state.name, this.state.email, this.state.password, this.state.team).then(function(res){
+    this.auth.registerUser(this.state.name, this.state.email, this.state.password, this.state.team).then(function(res){
         if(res.error){
             self.setState({error: res.error});
         }
         else{
           console.log("registered")
-          var auth = new Auth();
-          auth.createLoggedInCookie()
-          //self.props.history.push('/')
-          // Force window to refresh so the nav is shown based on the logged in cookie we just set.
-          // TODO - should be a way of updating the nav component without refreshing the page?
+          // TODO - should be a way of updating the nav component without refreshing the page? Also this isn't IE compatible...
           window.location.href = "/";
         }
     })
