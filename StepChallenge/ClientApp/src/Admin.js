@@ -6,6 +6,7 @@ import { EditParticipant } from './components/admin/editParticipant';
 import { EditTeams } from './components/admin/editTeams';
 import { EditChallengeSettings } from './components/admin/editChallengeSettings';
 import { AdminScoreBoard } from './components/admin/adminScoreBoard';
+import { TotalOverview } from './components/admin/totalOverview';
 
 export class Admin extends Component {
   static displayName = Admin.name;
@@ -41,12 +42,15 @@ export class Admin extends Component {
             <p><em>Loading...</em></p>
           }
           {!this.state.loading &&
-            <AdminLayout >
-              <Route path='/admin/participants' component={EditParticipant} />
-              <Route path='/admin/teams' component={EditTeams} />
-              <Route path='/admin/settings' component={EditChallengeSettings} />
-              <Route path='/admin/leaderboard' component={AdminScoreBoard} />
-            </AdminLayout>
+            <div>
+              <AdminLayout >
+                <Route path='/admin/participants' component={EditParticipant} />
+                <Route path='/admin/teams' component={EditTeams} />
+                <Route path='/admin/settings' component={EditChallengeSettings} />
+                <Route path='/admin/leaderboard' component={AdminScoreBoard} />
+              </AdminLayout>
+              <TotalOverview />
+            </div>
           }
           </div>
       );
