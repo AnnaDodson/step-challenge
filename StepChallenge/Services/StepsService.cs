@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using GraphQL;
 using Microsoft.EntityFrameworkCore;
 using Model;
+using Model.GraphQL;
 using StepChallenge.DataModels;
 using StepChallenge.Mutation;
 
@@ -127,6 +129,52 @@ namespace StepChallenge.Services
                         .Sum(s => s.StepCount)));
 
             return total;
+        }
+
+        public List<TeamScoresOverview> GetTeamsOverview()
+        {
+            //var teamOverviews = new List<TeamScoresOverview>();
+            var days = new List<DateTimeOffset>();
+            for (var dt = _startDate; dt <= _endDate; dt = dt.AddDays(1))
+            {
+                days.Add(dt);
+            }
+
+            var teams = _stepContext.Team
+                .Select(team => new TeamScoresOverview
+                {
+                    TeamId = team.TeamId,
+                    TeamName = team.TeamName,
+                    NumberOfParticipants = team.NumberOfParticipants,
+                    TeamTotalSteps = team.Participants.Sum(p => p.Steps.Sum(s => s.StepCount)),
+                    ParticipantsStepsOverviews = team.Participants.Select(participant => new ParticipantsStepsOverview
+                    {
+                        ParticipantId = participant.ParticipantId,
+                        ParticipantName = participant.ParticipantName,
+                        StepsOverviews = GetAllDaysSteps(participant.Steps),
+                        StepTotal = participant.Steps.Where(s => s.DateOfSteps >= _startDate && s.DateOfSteps < _endDate).Sum(s => s.StepCount)
+                    }).ToList()
+                })
+                .OrderByDescending(t => t.TeamName)
+                .ToList();
+
+            return teams;
+        }
+
+        private List<StepsOverview> GetAllDaysSteps(IEnumerable<Steps> steps)
+        {
+            var days = new List<StepsOverview>();
+            for (var dt = _startDate; dt <= _endDate; dt = dt.AddDays(1))
+            {
+                var dayStepCount = new StepsOverview
+                {
+                    StepCount = steps.Any(s => s.DateOfSteps == dt) ? steps.First(s => s.DateOfSteps == dt).StepCount : 0,
+                    DateOfSteps = dt,
+                };
+                days.Add(dayStepCount);
+            }
+
+            return days;
         }
 
         private int GetTeamSize()

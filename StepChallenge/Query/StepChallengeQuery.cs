@@ -132,7 +132,12 @@ namespace StepChallenge.Query
                     return settings;
                 });
 
-
+            Field<ListGraphType<TeamOverviewType>>("AdminParticipantsOverview",
+                resolve: context =>
+                {
+                    var teams = stepsService.GetTeamsOverview();
+                    return teams;
+                });
         }
 
     }
