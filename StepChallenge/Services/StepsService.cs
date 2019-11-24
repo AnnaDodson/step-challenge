@@ -153,8 +153,16 @@ namespace StepChallenge.Services
             return total;
         }
 
-        public async Task<List<TeamScoresOverview>> GetTeamsOverview()
+        public async Task<AdminParticipantsOverview> GetTeamsOverview()
         {
+            var overview = new AdminParticipantsOverview
+            {
+                HighestStepsParticipant = 0,
+                HighestStepsParticipantId = 0,
+                HighestStepsTeam = 0,
+                HighestStepsTeamId = 0,
+            };
+
             var teams = _stepContext.Team
                 .Select(team => new TeamScoresOverview
                 {
@@ -178,29 +186,52 @@ namespace StepChallenge.Services
             var averageTeamSize = await GetAverageTeamSize();
 
             //TODO this should be returning all in one flat list so these can be added inline
-            var teamsWithAverageScores = GetAverageStepsForTeamWithLessPeople(teams, averageTeamSize);
-            var teamsWithMissingParticipants = GetMissingParticipants(teamsWithAverageScores);
-
-            return teamsWithMissingParticipants ;
-        }
-
-        private List<TeamScoresOverview> GetMissingParticipants(List<TeamScoresOverview> teams)
-        {
-            foreach (var team in teams.Where(t => t.NumberOfParticipants != t.ParticipantsStepsOverviews.Count))
+            //var teamsWithAverageScores = GetAverageStepsForTeamWithLessPeople(teams, averageTeamSize);
+            foreach (var team in teams)
             {
-                var need = team.NumberOfParticipants - team.ParticipantsStepsOverviews.Count;
-                var emptyParticipant = new ParticipantsStepsOverview
+                foreach (var participant in team.ParticipantsStepsOverviews)
                 {
-                    ParticipantName = "Not registered",
-                    StepsOverviews = new List<StepsOverview>(),
-                    StepTotal = 0
-                };
-                var emptyParticipants = new ParticipantsStepsOverview[need];
-                Array.Fill(emptyParticipants, emptyParticipant);
-                team.ParticipantsStepsOverviews.AddRange(emptyParticipants);
+                    if (participant.StepTotal > overview.HighestStepsParticipant)
+                    {
+                        overview.HighestStepsParticipant = participant.StepTotal;
+                        overview.HighestStepsParticipantId = participant.ParticipantId;
+                    }
+                }
+
+                if (team.TeamTotalSteps > overview.HighestStepsTeam)
+                {
+                    overview.HighestStepsTeam = team.TeamTotalSteps;
+                    overview.HighestStepsTeamId = team.TeamId;
+                }
+
+                if (team.NumberOfParticipants != averageTeamSize && team.NumberOfParticipants != 0)
+                {
+                    team.TeamTotalStepsWithAverage = GetAveragedStepCountTotal(team.TeamTotalSteps, team.NumberOfParticipants, averageTeamSize);
+                }
+                if(team.NumberOfParticipants != team.ParticipantsStepsOverviews.Count)
+                {
+                    team.ParticipantsStepsOverviews.AddRange(GetMissingParticipants(team));
+                }
             }
 
-            return teams;
+            overview.Teams = teams;
+
+            return overview;
+        }
+
+        private List<ParticipantsStepsOverview> GetMissingParticipants(TeamScoresOverview team)
+        {
+            var need = team.NumberOfParticipants - team.ParticipantsStepsOverviews.Count;
+            var emptyParticipant = new ParticipantsStepsOverview
+            {
+                ParticipantName = "Not registered",
+                StepsOverviews = new List<StepsOverview>(),
+                StepTotal = 0
+            };
+            var emptyParticipants = new ParticipantsStepsOverview[need];
+            Array.Fill(emptyParticipants, emptyParticipant);
+
+            return emptyParticipants.ToList();
         }
 
         private List<StepsOverview> GetAllDaysSteps(IEnumerable<Steps> steps)

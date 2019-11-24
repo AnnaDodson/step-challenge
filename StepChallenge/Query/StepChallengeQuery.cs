@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using GraphQL.Types;
 using Microsoft.EntityFrameworkCore;
 using Model;
@@ -132,11 +133,12 @@ namespace StepChallenge.Query
                     return settings;
                 });
 
-            Field<ListGraphType<TeamOverviewType>>("AdminParticipantsOverview",
-                resolve: context =>
+            FieldAsync<AdminParticipantsOverviewType>("AdminParticipantsOverview",
+                resolve: async context =>
                 {
-                    var teams = stepsService.GetTeamsOverview();
-                    return teams;
+                    var overview = await stepsService.GetTeamsOverview();
+
+                    return overview;
                 });
         }
 

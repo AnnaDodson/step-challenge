@@ -23,7 +23,7 @@ namespace StepChallenge.Tests
             var stepsService = new StepsServiceStub(GetMockStepContext(team));
             var result = await stepsService.GetTeamsOverview();
 
-            var resultTotal = result.ToList().First(r => r.TeamId == 1).TeamTotalSteps;
+            var resultTotal = result.Teams.ToList().First(r => r.TeamId == 1).TeamTotalSteps;
             var expectedTotal = 180;
 
             Assert.IsTrue(resultTotal == expectedTotal, $"Expected total steps to be: {expectedTotal} but got {resultTotal}");
@@ -47,7 +47,7 @@ namespace StepChallenge.Tests
             var stepsService = new StepsServiceStub(GetMockStepContext(team));
             var result = await stepsService.GetTeamsOverview();
 
-            var resultTotal = result.ToList().First(r => r.TeamId == 1).TeamTotalSteps;
+            var resultTotal = result.Teams.ToList().First(r => r.TeamId == 1).TeamTotalSteps;
             var expectedTotal = 180;
 
             Assert.IsTrue(resultTotal == expectedTotal, $"Expected total steps to be: {expectedTotal} but got {resultTotal}");
@@ -65,7 +65,7 @@ namespace StepChallenge.Tests
             var stepsService = new StepsServiceStub(GetMockStepContext(team), averageTeamSize);
             var result = await stepsService.GetTeamsOverview();
 
-            var resultTotal = result.ToList().First(r => r.TeamId == 1).TeamTotalStepsWithAverage;
+            var resultTotal = result.Teams.ToList().First(r => r.TeamId == 1).TeamTotalStepsWithAverage;
             var expectedTotal = 240;
 
             Assert.IsTrue(resultTotal == expectedTotal, $"Expected total steps to be: {expectedTotal} but got {resultTotal}");
