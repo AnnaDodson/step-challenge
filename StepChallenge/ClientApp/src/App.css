@@ -18,3 +18,51 @@
   border: "1px solid red";
   text-decoration: underline;
 }
+
+.table-container{
+  width: 100%;
+  position: relative;
+}
+
+.overview-table{
+  overflow-x: scroll;
+  overflow-y: overflow;
+  margin-left: 24em;
+}
+
+.overview-table table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+  
+.overview-table .headcol {
+  position: absolute;
+  width: 12em;
+  left: 0;
+  top: auto;
+  border-top-width: 1px;
+  /*only relevant for first row*/
+  margin-top: -1px;
+  /*compensate for top border*/
+}
+
+.overview-table .headcol2 {
+  margin-left: 12em;
+}
+  
+.overview-table .headcol:before {
+  margin-left: 12em;
+}
+
+.overview-table .winner {
+  color: rgb(102, 219, 121) !important;
+  font-weight: 700;
+}
+
+.overview-table .border-right{
+  border-right: 1px solid black;
+}
+
+.overview-table .border-left{
+  border-right: 1px solid black;
+}

@@ -44,12 +44,12 @@ export class Admin extends Component {
           {!this.state.loading &&
             <div>
               <AdminLayout >
+                <Route exact path='/admin/' component={TotalOverview} />
                 <Route path='/admin/participants' component={EditParticipant} />
                 <Route path='/admin/teams' component={EditTeams} />
                 <Route path='/admin/settings' component={EditChallengeSettings} />
                 <Route path='/admin/leaderboard' component={AdminScoreBoard} />
               </AdminLayout>
-              <TotalOverview />
             </div>
           }
           </div>
