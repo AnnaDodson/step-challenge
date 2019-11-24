@@ -10,6 +10,7 @@ namespace StepChallenge.DataModels
         public int NumberOfParticipants { get; set; }
 
         public int TeamTotalSteps { get; set; }
+        public int TeamTotalStepsWithAverage { get; set; }
         
     }
 }

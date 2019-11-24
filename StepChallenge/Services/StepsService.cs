@@ -109,15 +109,37 @@ namespace StepChallenge.Services
                 })
                 .ToList();
 
-            // add a pretend participant with averaged steps to teams with less participants
-            foreach (var teamScore in sortedTeams.Where(t => t.NumberOfParticipants != averageTeamSize && t.NumberOfParticipants != 0))
-            {
-                teamScore.TeamStepCount = ((teamScore.TeamStepCount / teamScore.NumberOfParticipants) *
-                                           (averageTeamSize - teamScore.NumberOfParticipants)) +
-                                          teamScore.TeamStepCount;
-            }
+            var teamWithAveragePerson = GetAverageStepsForTeamWithLessPeople(sortedTeams, averageTeamSize);
 
-            return sortedTeams.OrderByDescending(t => t.TeamStepCount).ToList();
+            return teamWithAveragePerson.OrderByDescending(t => t.TeamStepCount).ToList();
+        }
+
+        private List<TeamScores> GetAverageStepsForTeamWithLessPeople(List<TeamScores> teams, int averageTeamSize)
+        {
+            // add a pretend participant with averaged steps to teams with less participants
+            foreach (var teamScore in teams.Where(t => t.NumberOfParticipants != averageTeamSize && t.NumberOfParticipants != 0))
+            {
+                teamScore.TeamStepCount = GetAveragedStepCountTotal(teamScore.TeamStepCount,
+                    teamScore.NumberOfParticipants, averageTeamSize);
+            }
+            return teams;
+        }
+
+        private List<TeamScoresOverview> GetAverageStepsForTeamWithLessPeople(List<TeamScoresOverview> teams, int averageTeamSize)
+        {
+            // add a pretend participant with averaged steps to teams with less participants
+            foreach (var teamScore in teams.Where(t => t.NumberOfParticipants != averageTeamSize && t.NumberOfParticipants != 0))
+            {
+                teamScore.TeamTotalStepsWithAverage = GetAveragedStepCountTotal(teamScore.TeamTotalSteps, teamScore.NumberOfParticipants, averageTeamSize);
+            }
+            return teams;
+        }
+
+        private int GetAveragedStepCountTotal(int teamStepCount, int teamNumberOfParticipants, int averageTeamSize)
+        {
+            return ((teamStepCount / teamNumberOfParticipants) *
+                                           (averageTeamSize - teamNumberOfParticipants)) +
+                                          teamStepCount;
         }
 
         public int GetTotalSteps(IQueryable<Team> teams, DateTime thisMonday, DateTime startDate, int averageTeamSize)
@@ -131,22 +153,17 @@ namespace StepChallenge.Services
             return total;
         }
 
-        public List<TeamScoresOverview> GetTeamsOverview()
+        public async Task<List<TeamScoresOverview>> GetTeamsOverview()
         {
-            //var teamOverviews = new List<TeamScoresOverview>();
-            var days = new List<DateTimeOffset>();
-            for (var dt = _startDate; dt <= _endDate; dt = dt.AddDays(1))
-            {
-                days.Add(dt);
-            }
-
             var teams = _stepContext.Team
                 .Select(team => new TeamScoresOverview
                 {
                     TeamId = team.TeamId,
                     TeamName = team.TeamName,
                     NumberOfParticipants = team.NumberOfParticipants,
-                    TeamTotalSteps = team.Participants.Sum(p => p.Steps.Sum(s => s.StepCount)),
+                    TeamTotalSteps = team.Participants.Sum(p => p.Steps
+                        .Where(s => s.DateOfSteps >= _startDate && s.DateOfSteps < _endDate)
+                        .Sum(s => s.StepCount)),
                     ParticipantsStepsOverviews = team.Participants.Select(participant => new ParticipantsStepsOverview
                     {
                         ParticipantId = participant.ParticipantId,
@@ -155,8 +172,33 @@ namespace StepChallenge.Services
                         StepTotal = participant.Steps.Where(s => s.DateOfSteps >= _startDate && s.DateOfSteps < _endDate).Sum(s => s.StepCount)
                     }).ToList()
                 })
-                .OrderByDescending(t => t.TeamName)
+                .OrderBy(t => t.TeamName)
                 .ToList();
+
+            var averageTeamSize = await GetAverageTeamSize();
+
+            //TODO this should be returning all in one flat list so these can be added inline
+            var teamsWithAverageScores = GetAverageStepsForTeamWithLessPeople(teams, averageTeamSize);
+            var teamsWithMissingParticipants = GetMissingParticipants(teamsWithAverageScores);
+
+            return teamsWithMissingParticipants ;
+        }
+
+        private List<TeamScoresOverview> GetMissingParticipants(List<TeamScoresOverview> teams)
+        {
+            foreach (var team in teams.Where(t => t.NumberOfParticipants != t.ParticipantsStepsOverviews.Count))
+            {
+                var need = team.NumberOfParticipants - team.ParticipantsStepsOverviews.Count;
+                var emptyParticipant = new ParticipantsStepsOverview
+                {
+                    ParticipantName = "Not registered",
+                    StepsOverviews = new List<StepsOverview>(),
+                    StepTotal = 0
+                };
+                var emptyParticipants = new ParticipantsStepsOverview[need];
+                Array.Fill(emptyParticipants, emptyParticipant);
+                team.ParticipantsStepsOverviews.AddRange(emptyParticipants);
+            }
 
             return teams;
         }
@@ -188,6 +230,15 @@ namespace StepChallenge.Services
         {
             int diff = (7 + (dt.DayOfWeek - startOfWeek)) % 7;
             return dt.AddDays(-1 * diff).Date;
+        }
+
+        public virtual async Task<int> GetAverageTeamSize()
+        {
+            var average = await _stepContext.ChallengeSettings
+                .Where(s => s.ChallengeSettingsId == 1)
+                .FirstOrDefaultAsync();
+
+            return average?.NumberOfParticipantsInATeam ?? 6;
         }
 
     }
