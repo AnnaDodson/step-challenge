@@ -16,7 +16,7 @@ namespace StepChallenge.Services
     {
         public StepContext _stepContext;
         public DateTime _startDate = new DateTime(2019,09,16, 0,0,0);
-        public DateTime _endDate = new DateTime(2019, 12, 05,0,0,0);
+        public DateTime _endDate = new DateTime(2019, 12, 01,0,0,0);
 
         public StepsService(StepContext stepContext)
         {
@@ -85,7 +85,7 @@ namespace StepChallenge.Services
         {
             var steps = _stepContext.Steps
                 .Where(s => s.ParticipantId == participant.ParticipantId)
-                .Where(s => s.DateOfSteps >= _startDate && s.DateOfSteps < _endDate)
+                .Where(s => s.DateOfSteps >= _startDate && s.DateOfSteps <= _endDate)
                 .OrderBy(s => s.DateOfSteps)
                 .ToList();
 
@@ -170,14 +170,14 @@ namespace StepChallenge.Services
                     TeamName = team.TeamName,
                     NumberOfParticipants = team.NumberOfParticipants,
                     TeamTotalSteps = team.Participants.Sum(p => p.Steps
-                        .Where(s => s.DateOfSteps >= _startDate && s.DateOfSteps < _endDate)
+                        .Where(s => s.DateOfSteps >= _startDate && s.DateOfSteps <= _endDate)
                         .Sum(s => s.StepCount)),
                     ParticipantsStepsOverviews = team.Participants.Select(participant => new ParticipantsStepsOverview
                     {
                         ParticipantId = participant.ParticipantId,
                         ParticipantName = participant.ParticipantName,
                         StepsOverviews = GetAllDaysSteps(participant.Steps),
-                        StepTotal = participant.Steps.Where(s => s.DateOfSteps >= _startDate && s.DateOfSteps < _endDate).Sum(s => s.StepCount)
+                        StepTotal = participant.Steps.Where(s => s.DateOfSteps >= _startDate && s.DateOfSteps <= _endDate).Sum(s => s.StepCount)
                     }).ToList()
                 })
                 .OrderBy(t => t.TeamName)
