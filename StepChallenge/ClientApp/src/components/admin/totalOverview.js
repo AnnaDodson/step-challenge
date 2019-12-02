@@ -49,8 +49,9 @@ export class TotalOverview extends Component {
 
   static renderTable (teams, highest) {
     //TODO get from api
-    let totalDays = 81
     var startDate = moment("2019-09-16T02:00:00+00:00");
+    var endDate = moment("2019-12-01T01:00:00+01:00")
+    var totalDays = endDate.diff(startDate, 'days') + 2; //the two is for the two extra columns at the start. Needs sorting out!
     var formattedDayHeader = [];
     for (let index = 0; index < totalDays; index++) {
       var day = moment(startDate).add(index, 'days').format('D-MM');
@@ -63,7 +64,7 @@ export class TotalOverview extends Component {
       {formattedDayHeader}
       <th className="border-right border-left">Participant Total</th>
       <th>Actual Team Total</th>
-      <th className="border-right border-left">Team Total Including Averaged Person</th>
+      <th className="border-left">Team Total Including Averaged Person</th>
     </tr>)
     /** Header */
     const tableRows = [];
@@ -81,7 +82,7 @@ export class TotalOverview extends Component {
               {firstParticipantRow}
               <td className="border-right border-left">{participant.stepTotal}</td>
               <th key={team.teamName + "_total"} rowSpan={team.numberOfParticipants}>{team.teamTotalSteps}</th>
-              <th className="border-right border-left" key={team.teamName + "_total_with_average"} rowSpan={team.numberOfParticipants}>{team.teamTotalStepsWithAverage == 0 ? team.teamTotalSteps : team.teamTotalStepsWithAverage}</th>
+              <th className="border-left" key={team.teamName + "_total_with_average"} rowSpan={team.numberOfParticipants}>{team.teamTotalStepsWithAverage == 0 ? team.teamTotalSteps : team.teamTotalStepsWithAverage}</th>
             </tr>
           )
         }

@@ -22,6 +22,8 @@
 .table-container{
   width: 100%;
   position: relative;
+  height: 800px;
+  overflow: auto;
 }
 
 .overview-table{
@@ -64,5 +66,5 @@
 }
 
 .overview-table .border-left{
-  border-right: 1px solid black;
+  border-left: 1px solid black;
 }
