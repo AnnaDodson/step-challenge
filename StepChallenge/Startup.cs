@@ -17,6 +17,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Model.GraphQL;
 using StepChallenge.Controllers;
+using StepChallenge.DataModels;
 using StepChallenge.Mutation;
 using StepChallenge.Query;
 using StepChallenge.Services;
@@ -56,6 +57,10 @@ namespace StepChallenge
             services.AddSingleton<TeamType>();
             services.AddSingleton<StepsType>();
             services.AddSingleton<StepInputType>();
+            services.AddSingleton<AdminParticipantsOverviewType>();
+            services.AddSingleton<TeamOverviewType>();
+            services.AddSingleton<ParticipantOverviewType>();
+            services.AddSingleton<StepsOverviewType>();
             services.AddSingleton<LeaderBoardType>();
             services.AddSingleton<TeamScoreType>();
             services.AddSingleton<StepChallengeMutation>();
@@ -145,7 +150,7 @@ namespace StepChallenge
             app.UseSession();
             app.UseCookiePolicy();
             app.UseAuthentication();
-            app.UseGraphiQl("/graphql");
+            //app.UseGraphiQl("/graphql");
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSpaStaticFiles();

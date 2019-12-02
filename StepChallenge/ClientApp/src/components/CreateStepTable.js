@@ -6,11 +6,16 @@ import TeamStep from './TeamStep';
 
 
 function getDaysToDisplay(startDate){
-    var displayFromNextDay = moment().add(2, 'days');
-    var diff = displayFromNextDay.diff(startDate, "days");
-    var roundUpToTheNextWeek = Math.ceil(diff/7)*7
-    var howManyDaysToShow = moment(startDate).add(roundUpToTheNextWeek, 'days');
-    return howManyDaysToShow.diff(startDate, 'days');
+  if(moment().isAfter(moment("2019-12-01T01:00:00+01:00"))){
+    var endDate = moment("2019-12-07T01:00:00+01:00")
+    var diff = endDate.diff(startDate, 'days');
+    return diff
+  }
+  var displayFromNextDay = moment().add(2, 'days');
+  var diff = displayFromNextDay.diff(startDate, "days");
+  var roundUpToTheNextWeek = Math.ceil(diff/7)*7
+  var howManyDaysToShow = moment(startDate).add(roundUpToTheNextWeek, 'days');
+  return howManyDaysToShow.diff(startDate, 'days');
 }
 
 function getTable(steps, numberOfParticipants, type){
