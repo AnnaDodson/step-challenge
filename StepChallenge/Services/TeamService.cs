@@ -12,7 +12,7 @@ namespace StepChallenge.Services
     {
         private readonly StepContext _stepContext;
         private DateTime _startDate = new DateTime(2019,09,16, 0,0,0);
-        private DateTime _endDate = new DateTime(2019, 12, 05,0,0,0);
+        private DateTime _endDate = new DateTime(2019, 12, 01,0,0,0);
         
         public TeamService(StepContext stepContext)
         {
@@ -46,7 +46,7 @@ namespace StepChallenge.Services
                 .Select(s => new TeamScoreBoard
                 {
                     DateOfSteps = s.First().DateOfSteps,
-                    StepCount = s.Where(st => st.DateOfSteps >= _startDate && st.DateOfSteps < _endDate)
+                    StepCount = s.Where(st => st.DateOfSteps >= _startDate && st.DateOfSteps <= _endDate)
                         .Sum(st => st.StepCount),
                 })
                 .OrderBy(s => s.DateOfSteps)
